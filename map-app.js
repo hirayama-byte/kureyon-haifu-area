@@ -49,6 +49,7 @@
   // ---- 地図 ----
   function buildMap() {
     const el = $('geoMap');
+    hideCircle();
     if (map) map.destroy();
     map = window.HaifuMap.create(el);
     zones = {};
@@ -75,6 +76,68 @@
   }
   function hideTip() { $('mapTip').hidden = true; }
 
+  // ---- 円で選ぶ（ピンから半径○km） ----
+  // 区画の面積の半分以上が円の中に入っていれば、その区画を選ぶ
+  const CIRCLE_SHARE = 0.5;
+  let circle = null;        // { lat, lng }（円を出していないときは null）
+  let circleHits = [];      // 円に入る区画
+  const inRing = (lng, lat, ring) => { let c = false; for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) { const [xi, yi] = ring[i], [xj, yj] = ring[j]; if ((yi > lat) !== (yj > lat) && lng < (xj - xi) * (lat - yi) / (yj - yi) + xi) c = !c; } return c; };
+  const inArea = (a, lng, lat) => a.polys.some(poly => inRing(lng, lat, poly[0]) && !poly.slice(1).some(h => inRing(lng, lat, h)));
+  // 区画の中に格子状の点を打っておく（円に入る割合を数えるため。最初に使うときに1回だけ作る）
+  function samplesOf(a) {
+    if (a._samples) return a._samples;
+    let w = 180, s = 90, e = -180, n = -90;
+    for (const poly of a.polys) for (const [lng, lat] of poly[0]) { if (lng < w) w = lng; if (lng > e) e = lng; if (lat < s) s = lat; if (lat > n) n = lat; }
+    let pts = [];
+    for (const k of [14, 30]) {
+      pts = [];
+      for (let i = 0; i < k; i++) for (let j = 0; j < k; j++) { const lng = w + (e - w) * (i + 0.5) / k, lat = s + (n - s) * (j + 0.5) / k; if (inArea(a, lng, lat)) pts.push([lng, lat]); }
+      if (pts.length >= 12) break;
+    }
+    if (!pts.length) pts = [a.label];
+    return (a._samples = pts);
+  }
+  const distM = (lat1, lng1, lat2, lng2) => { const kx = 111320 * Math.cos((lat1 + lat2) / 2 * Math.PI / 180); return Math.hypot((lng2 - lng1) * kx, (lat2 - lat1) * 110574); };
+  function updateCircle() {
+    if (!circle) return;
+    const r = +$('radius').value;
+    circleHits = AREA.areas.filter(a => {
+      const pts = samplesOf(a);
+      return pts.filter(([lng, lat]) => distM(circle.lat, circle.lng, lat, lng) <= r).length / pts.length >= CIRCLE_SHARE;
+    });
+    const hitKeys = new Set(circleHits.map(a => a.key));
+    AREA.areas.forEach(a => zones[a.key] && zones[a.key].setPreview(hitKeys.has(a.key)));
+    const total = circleHits.reduce((s, a) => s + a.copies, 0);
+    const fresh = circleHits.filter(a => !selected.has(a.key));
+    const freshCopies = fresh.reduce((s, a) => s + a.copies, 0);
+    const info = $('circleInfo');
+    info.hidden = false;
+    info.textContent = circleHits.length
+      ? `円の中：${circleHits.length}区画・約${fmt(total)}部` + (fresh.length < circleHits.length ? `（うち未選択 ${fresh.length}区画・${fmt(freshCopies)}部）` : '')
+      : '円の中に入る区画がありません。ピンを動かすか、半径を大きくしてください。';
+    $('circleAdd').disabled = !fresh.length;
+    $('circleAdd').textContent = fresh.length ? `この円の${fresh.length}区画を追加` : '追加する区画はありません';
+  }
+  function showCircle(lat, lng) {
+    circle = { lat, lng };
+    map.showCircle(lat, lng, +$('radius').value, ([la, ln]) => { circle = { lat: la, lng: ln }; updateCircle(); });
+    ['circleAdd', 'circleClear'].forEach(id => { $(id).hidden = false; });
+    $('circleShow').textContent = 'ピンを地図の中心に移動';
+    updateCircle();
+  }
+  function hideCircle() {
+    circle = null; circleHits = [];
+    if (map) map.hideCircle();
+    if (AREA) AREA.areas.forEach(a => zones[a.key] && zones[a.key].setPreview(false));
+    ['circleAdd', 'circleClear', 'circleInfo'].forEach(id => { $(id).hidden = true; });
+    $('circleShow').textContent = '地図の中心にピンを置く';
+  }
+  function addCircle() {
+    circleHits.forEach(a => selected.add(a.key));
+    repaintAll();
+    update();
+  }
+
   // ---- 住所で地図を移動（国土地理院の住所検索） ----
   async function searchAddress(q) {
     const msg = $('addrMsg');
@@ -91,6 +154,7 @@
       if (!list.length) { msg.textContent = `「${q}」が配布エリアの近くに見つかりませんでした。`; return; }
       const [lng, lat] = list[0].geometry.coordinates;
       map.panTo(lat, lng, 16);
+      if (circle) showCircle(lat, lng);
       msg.textContent = `「${list[0].properties.title}」に移動しました。`;
       setTimeout(() => { msg.hidden = true; }, 3000);
     } catch (e) {
@@ -194,6 +258,7 @@
     $('stickyCopies').textContent = fmt(r.total);
     $('stickyFee').textContent = fmt(r.fee);
     writeHash(r);
+    updateCircle();
   }
 
   // ---- URL に選択を残す（配布マップ版と同じ書き方） ----
@@ -260,6 +325,10 @@
     ['size', 'fold', 'insert'].forEach(id => $(id).addEventListener('change', update));
     X.bind(() => calc().rawTotal);
     $('showLabels').addEventListener('change', e => map.setLabels(e.target.checked));
+    $('circleShow').addEventListener('click', () => { const [lat, lng] = map.center(); showCircle(lat, lng); });
+    $('radius').addEventListener('change', () => { if (circle) { map.setRadius(+$('radius').value); updateCircle(); } else { const [lat, lng] = map.center(); showCircle(lat, lng); } });
+    $('circleAdd').addEventListener('click', addCircle);
+    $('circleClear').addEventListener('click', hideCircle);
     $('addrForm').addEventListener('submit', e => { e.preventDefault(); searchAddress($('addrInput').value); });
     $('copyBtn').addEventListener('click', () => {
       const t = summaryText();

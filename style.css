@@ -211,3 +211,19 @@ tbody tr.selected { background: #FFEDD5; }
 .adjust-round:disabled { border-color: #D1D5DB; color: #9CA3AF; cursor: default; background: #fff; }
 .adjust-msg { margin: 6px 0 0; font-size: 12px; color: #B45309; }
 .adj-note { margin: 4px 0 0; font-size: 12px; color: #B45309; line-height: 1.5; }
+
+/* ---- 円で選ぶ（地図版） ---- */
+.circle-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: #F0FDFA; font-size: 13px; }
+.circle-title { font-weight: 700; color: #0F766E; }
+.circle-radius { display: inline-flex; align-items: center; gap: 4px; }
+.circle-radius select { padding: 5px 6px; border: 1px solid #99F6E4; border-radius: 8px; background: #fff; font-size: 13px; }
+.circle-bar button { border: 1px solid #0F766E; background: #fff; color: #0F766E; border-radius: 999px; padding: 4px 12px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.circle-bar button:hover { background: #CCFBF1; }
+.circle-bar .circle-add { background: #0F766E; color: #fff; }
+.circle-bar .circle-add:hover { background: #115E59; }
+.circle-bar .circle-add:disabled { background: #fff; color: #9CA3AF; border-color: #D1D5DB; cursor: default; }
+.circle-bar .circle-clear { border-color: #D1D5DB; color: var(--muted); }
+.circle-info { flex-basis: 100%; color: #134E4A; font-weight: 700; }
+.circle-pin span { position: absolute; left: 4px; top: 0; width: 20px; height: 20px; border-radius: 50% 50% 50% 0; background: #0F766E; border: 3px solid #fff; transform: rotate(-45deg); box-shadow: 0 2px 6px rgba(0,0,0,.35); }
+.circle-pin span::after { content: ''; position: absolute; left: 4px; top: 4px; width: 6px; height: 6px; border-radius: 50%; background: #fff; }
+.circle-pin { cursor: grab; }

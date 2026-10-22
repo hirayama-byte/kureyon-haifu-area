@@ -19,7 +19,7 @@
     <p class="eyebrow">情報誌くれよん　同時配布　<span class="beta">地図版・試作</span></p>
     <h1>配布エリア選択</h1>
     <nav class="area-tabs" id="areaTabs" aria-label="エリアの切り替え"></nav>
-    <p class="lead">地図の区画をタップすると、配布可能部数と配布料金を自動で計算します。住所で地図を動かしたり、下の一覧から選んだりもできます。<a href="index.html">配布マップ版はこちら</a></p>
+    <p class="lead">地図の区画をタップすると、配布可能部数と配布料金を自動で計算します。住所で地図を動かしたり、ピンからの半径で選んだり、下の一覧から選んだりもできます。<a href="index.html">配布マップ版はこちら</a></p>
   </div>
 </header>
 
@@ -34,6 +34,19 @@
       </form>
       <div class="legend" id="legend"></div>
       <label class="label-toggle"><input type="checkbox" id="showLabels" checked> 番号を表示</label>
+    </div>
+    <div class="circle-bar" id="circleBar">
+      <span class="circle-title">円で選ぶ</span>
+      <label class="circle-radius">半径
+        <select id="radius" aria-label="円の半径">
+          <option value="500">0.5km</option><option value="1000" selected>1km</option><option value="1500">1.5km</option>
+          <option value="2000">2km</option><option value="3000">3km</option><option value="5000">5km</option>
+        </select>
+      </label>
+      <button type="button" id="circleShow">地図の中心にピンを置く</button>
+      <span class="circle-info" id="circleInfo" hidden></span>
+      <button type="button" class="circle-add" id="circleAdd" hidden>この円の区画を追加</button>
+      <button type="button" class="circle-clear" id="circleClear" hidden>円を消す</button>
     </div>
     <p class="addr-msg" id="addrMsg" hidden></p>
     <div class="geo-map" id="geoMap"></div>
