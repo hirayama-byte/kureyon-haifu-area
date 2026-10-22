@@ -12,13 +12,15 @@
   const tierOf = n => (n < 5000 ? 0 : n < 10000 ? 1 : n < 30000 ? 2 : 3);
   const foldPrice = (size, on) => (on ? (size === 'A2' ? 2 : 1) : 0); // 折加工：A2は+2円、それ以外+1円
   const insertPrice = on => (on ? 2 : 0);                            // 挟み込み：+2円
+  const agentPrice = on => (on ? 1 : 0);                             // 代理店：売値に+1.0円
 
-  function calcFee(total, size, fold, ins) {
+  function calcFee(total, size, fold, ins, agent) {
     const unitSize = SIZE_PRICE[size][tierOf(total)];
     const unitFold = foldPrice(size, fold);
     const unitIns = insertPrice(ins);
-    const unit = unitSize + unitFold + unitIns;
-    return { unitSize, unitFold, unitIns, unit, fee: Math.round(total * unit) };
+    const unitAgent = agentPrice(agent);
+    const unit = unitSize + unitFold + unitIns + unitAgent;
+    return { unitSize, unitFold, unitIns, unitAgent, unit, fee: Math.round(total * unit) };
   }
 
   window.HaifuPrice = {

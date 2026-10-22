@@ -197,3 +197,19 @@ tbody tr.selected { background: #FFEDD5; }
 @media (max-width: 960px) {
   .geo-map { height: 62vh; }
 }
+
+/* ---- 部数の調整・代理店 ---- */
+.adjust { margin-top: 12px; padding: 10px; border: 1px dashed #D1D5DB; border-radius: 10px; background: #FAFAFA; }
+.adjust-title { margin: 0 0 6px; font-size: 12px; font-weight: 700; color: var(--muted); }
+.adjust-row { display: flex; gap: 6px; align-items: center; }
+.adjust-row select { flex: 1; min-width: 0; padding: 7px 8px; border: 1px solid #D1D5DB; border-radius: 8px; background: #fff; font-size: 13px; color: var(--ink); }
+.adjust-qty { display: inline-flex; align-items: center; gap: 3px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+.adjust-qty input { width: 72px; padding: 7px 8px; border: 1px solid #D1D5DB; border-radius: 8px; text-align: right; font-size: 14px; font-variant-numeric: tabular-nums; }
+.adjust-row select:disabled, .adjust-qty input:disabled { background: #F3F4F6; color: #9CA3AF; }
+.adjust-round { margin-top: 6px; border: 1px solid var(--teal); background: #fff; color: var(--teal); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 700; cursor: pointer; }
+.adjust-round:hover { background: #F0FDFA; }
+.adjust-round:disabled { border-color: #D1D5DB; color: #9CA3AF; cursor: default; background: #fff; }
+.adjust-msg { margin: 6px 0 0; font-size: 12px; color: #B45309; }
+.agent-check { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.agent-check input { width: 16px; height: 16px; accent-color: var(--orange); }
+.adj-note { margin: 4px 0 0; font-size: 12px; color: #B45309; line-height: 1.5; }

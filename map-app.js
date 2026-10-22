@@ -5,6 +5,8 @@
   const AREAS = window.HAIFU_GEO || [];
   const { SIZE_PRICE, calcFee, fmt, fmtUnit } = window.HaifuPrice;
   const $ = id => document.getElementById(id);
+  // 部数の調整と代理店（extras.js）
+  let X = null;
 
   let AREA = null;
   let map = null;
@@ -34,6 +36,7 @@
   function setArea(id) {
     AREA = AREAS.find(a => a.id === id) || AREAS[0];
     selected = selectedBy[AREA.id] = selectedBy[AREA.id] || new Set();
+    X.setArea(AREA.id);
     document.querySelectorAll('#areaTabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.area === AREA.id)));
     $('source').textContent = AREA.source;
     $('legend').innerHTML = AREA.groups.map(g => `<span><i class="sw sw-${g.tone}"></i>${g.title}</span>`).join('') + '<span><i class="sw sw-sel"></i>選択中</span>';
@@ -113,7 +116,7 @@
     }
     const c = document.createElement('button');
     c.type = 'button'; c.className = 'danger'; c.textContent = 'すべて解除';
-    c.addEventListener('click', () => { selected.clear(); repaintAll(); update(); });
+    c.addEventListener('click', () => { selected.clear(); X.clear(); repaintAll(); update(); });
     box.appendChild(c);
   }
   function buildTables() {
@@ -160,14 +163,20 @@
 
   function calc() {
     const list = AREA.areas.filter(a => selected.has(a.key));
-    const total = list.reduce((s, a) => s + a.copies, 0);
+    const rawTotal = list.reduce((s, a) => s + a.copies, 0);
+    const adj = X.resolve(list);          // 部数の調整（1区画から減らす）
+    const total = rawTotal - adj.amount;  // 単価の段階も調整後の部数で決まる
     const size = $('size').value, fold = $('fold').value === '1', ins = $('insert').value === '1';
-    return { list, total, size, fold, ins, ...calcFee(total, size, fold, ins) };
+    return { list, rawTotal, adj, total, size, fold, ins, ...calcFee(total, size, fold, ins, X.agent()) };
   }
 
   function update() {
     const r = calc();
     $('totalCopies').textContent = fmt(r.total);
+    X.render(r.list, r.adj);
+    $('adjNote').hidden = !r.adj.amount;
+    if (r.adj.amount) $('adjNote').textContent = `選択の合計 ${fmt(r.rawTotal)}部 − 調整 ${fmt(r.adj.amount)}部（${labelOf(r.adj.area)}：${fmt(r.adj.area.copies)}→${fmt(r.adj.area.copies - r.adj.amount)}部）`;
+    $('unitAgent').textContent = fmtUnit(r.unitAgent); $('agentLine').hidden = !r.unitAgent;
     $('selCount').textContent = r.list.length;
     const groupTotals = AREA.groups.map(g => {
       const l = r.list.filter(a => a.group === g.id);
@@ -197,6 +206,7 @@
     if (r.size !== 'A4') p.set('size', r.size);
     if (r.fold) p.set('fold', '1');
     if (r.ins) p.set('ins', '1');
+    X.writeHash(p, r.adj);
     const h = p.toString();
     history.replaceState(null, '', h ? '#' + h : location.pathname + location.search);
   }
@@ -209,6 +219,7 @@
     if (SIZE_PRICE[p.get('size')]) $('size').value = p.get('size');
     if (p.get('fold') === '1') $('fold').value = '1';
     if (p.get('ins') === '1') $('insert').value = '1';
+    X.readHash(p, area);
     return area.id;
   }
 
@@ -222,8 +233,9 @@
       if (!l.length) continue;
       lines.push(`${g.title}：${l.map(a => a.code).join('・')}（${l.length}区画・${fmt(l.reduce((s, a) => s + a.copies, 0))}部）`);
     }
-    lines.push(`合計：${fmt(r.total)}部`);
-    const opts = [r.fold ? `折加工+${r.unitFold}円` : '', r.ins ? `挟み込み+${r.unitIns}円` : ''].filter(Boolean).join('・');
+    if (r.adj.amount) lines.push(`調整：${labelOf(r.adj.area)} −${fmt(r.adj.amount)}部（${fmt(r.adj.area.copies)}→${fmt(r.adj.area.copies - r.adj.amount)}部）`);
+    lines.push(`合計：${fmt(r.total)}部${r.adj.amount ? `（選択の合計 ${fmt(r.rawTotal)}部から調整）` : ''}`);
+    const opts = [r.fold ? `折加工+${r.unitFold}円` : '', r.ins ? `挟み込み+${r.unitIns}円` : '', r.unitAgent ? `代理店+${fmtUnit(r.unitAgent)}円` : ''].filter(Boolean).join('・');
     lines.push(`チラシ${r.size}　単価${fmtUnit(r.unitSize)}円${opts ? '（' + opts + '）' : ''}＝1部${fmtUnit(r.unit)}円`);
     lines.push(`配布料金：${fmt(r.fee)}円（税別）`);
     return lines.join('\n');
@@ -241,11 +253,13 @@
   // ---- 初期化 ----
   function init() {
     if (!AREAS.length) return;
+    X = window.HaifuExtras.create({ labelOf: a => labelOf(a) + (nameOf(a) ? ' ' + nameOf(a) : ''), onChange: update });
     buildAreaTabs();
     $('areaTabs').hidden = AREAS.length < 2;
     setArea(readHash());
     update();
     ['size', 'fold', 'insert'].forEach(id => $(id).addEventListener('change', update));
+    X.bind(() => calc().rawTotal);
     $('showLabels').addEventListener('change', e => map.setLabels(e.target.checked));
     $('addrForm').addEventListener('submit', e => { e.preventDefault(); searchAddress($('addrInput').value); });
     $('copyBtn').addEventListener('click', () => {
