@@ -177,3 +177,22 @@ tbody tr.selected { background: #FFEDD5; }
   .sticky-total b { font-size: 18px; color: #FDBA74; font-variant-numeric: tabular-nums; }
   .sticky-total .sep { color: #9CA3AF; }
 }
+
+/* ---- 地図版（map.html） ---- */
+.beta { display: inline-block; margin-left: 6px; padding: 0 8px; border-radius: 999px; background: #0D9488; color: #fff; font-size: 11px; letter-spacing: 0; vertical-align: 1px; }
+.lead a { color: var(--teal); font-weight: 700; margin-left: 4px; white-space: nowrap; }
+.geo-map { height: 72vh; min-height: 420px; background: #EEF2F0; }
+.addr-search { display: flex; flex: 1 1 260px; max-width: 420px; }
+.addr-search input { flex: 1; min-width: 0; padding: 7px 10px; border: 1px solid #D1D5DB; border-right: 0; border-radius: 8px 0 0 8px; font-size: 14px; }
+.addr-search button { border: 1px solid var(--teal); background: var(--teal); color: #fff; padding: 0 14px; border-radius: 0 8px 8px 0; font-weight: 700; cursor: pointer; }
+.addr-msg { margin: 0; padding: 6px 12px; font-size: 13px; color: var(--teal); background: #F0FDFA; border-bottom: 1px solid var(--line); }
+.label-toggle { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); cursor: pointer; }
+.label-toggle input { accent-color: var(--orange); }
+.zone-label { background: rgba(255,255,255,.92); border: 1px solid #BE185D; color: #831843; border-radius: 4px; padding: 0 3px; font: 700 11px/16px "Noto Sans JP", sans-serif; white-space: nowrap; transform: translate(-50%, -50%); pointer-events: none; }
+.zone-label-kita { border-color: #0369A1; color: #0C4A6E; }
+.zone-label.on { background: #C2410C; border-color: #C2410C; color: #fff; }
+.map-card .leaflet-container { font-family: "Noto Sans JP", sans-serif; }
+.map-card .map-tip { z-index: 500; }
+@media (max-width: 960px) {
+  .geo-map { height: 62vh; }
+}

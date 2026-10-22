@@ -5,21 +5,8 @@
   const AREAS = window.HAIFU_AREAS || [];
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
-  // ---- 料金表（同時配布エリア選択シートと同じ計算） ----
-  // サイズ単価は合計部数で変わる: 5,000部未満 / 1万部未満 / 3万部未満 / 3万部以上
-  const SIZE_PRICE = {
-    A4: [7, 6.5, 6, 5],
-    B4: [7, 6.5, 6, 5],
-    A3: [7.5, 7, 6.5, 5.5],
-    B3: [8, 7.5, 7, 6],
-    A2: [8, 7.5, 7, 6]
-  };
-  const tierOf = n => (n < 5000 ? 0 : n < 10000 ? 1 : n < 30000 ? 2 : 3);
-  const foldPrice = (size, on) => (on ? (size === 'A2' ? 2 : 1) : 0); // 折加工：A2は+2円、それ以外+1円
-  const insertPrice = on => (on ? 2 : 0);                            // 挟み込み：+2円
-
-  const fmt = n => n.toLocaleString('ja-JP');
-  const fmtUnit = n => (Number.isInteger(n) ? n.toFixed(1) : String(n));
+  // 料金の計算は price.js（map.html と共通）
+  const { SIZE_PRICE, calcFee, fmt, fmtUnit } = window.HaifuPrice;
   const $ = id => document.getElementById(id);
 
   // 状態
@@ -208,11 +195,7 @@
     const size = $('size').value;
     const fold = $('fold').value === '1';
     const ins = $('insert').value === '1';
-    const unitSize = SIZE_PRICE[size][tierOf(total)];
-    const unitFold = foldPrice(size, fold);
-    const unitIns = insertPrice(ins);
-    const unit = unitSize + unitFold + unitIns;
-    return { list, total, size, fold, ins, unitSize, unitFold, unitIns, unit, fee: Math.round(total * unit) };
+    return { list, total, size, fold, ins, ...calcFee(total, size, fold, ins) };
   }
 
   function update() {
