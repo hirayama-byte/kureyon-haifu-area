@@ -28,7 +28,11 @@ button, select, input { font: inherit; }
 .site-header { background: #fff; border-bottom: 1px solid var(--line); padding: 20px 0 16px; }
 .eyebrow { margin: 0 0 4px; color: var(--orange); font-weight: 700; font-size: 13px; letter-spacing: .08em; }
 .site-header h1 { margin: 0; font-size: 24px; font-weight: 900; line-height: 1.3; }
-.area-name { display: inline-block; margin-left: 4px; padding: 0 10px; border-radius: 999px; background: var(--ink); color: #fff; font-size: .75em; vertical-align: 2px; }
+/* エリアの切り替え */
+.area-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.area-tabs button { border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 999px; padding: 6px 18px; font-weight: 700; font-size: 15px; cursor: pointer; }
+.area-tabs button:hover { background: #F9FAFB; }
+.area-tabs button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
 .lead { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
 
 /* レイアウト */
@@ -50,12 +54,19 @@ button, select, input { font: inherit; }
 /* 地図 */
 .map-card { position: relative; overflow: hidden; }
 .map-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.map-tabs[hidden] + .legend { margin-right: auto; }
 .legend { display: flex; gap: 12px; font-size: 13px; color: var(--muted); }
 .legend span { display: inline-flex; align-items: center; gap: 5px; }
 .sw { display: inline-block; width: 14px; height: 14px; border-radius: 4px; }
 .sw-nishi { background: #FBCFE8; border: 1px solid var(--nishi); }
 .sw-kita { background: #BAE6FD; border: 1px solid var(--kita); }
 .sw-sel { background: var(--orange); }
+.sw-heiwa { background: #DCFCE7; border: 1px solid #22C55E; }
+/* 地図の切り替え（稲沢など地図が複数あるエリア） */
+.map-tabs { display: flex; gap: 4px; flex-wrap: wrap; width: 100%; }
+.map-tabs button { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 5px 12px; font-size: 14px; font-weight: 700; cursor: pointer; color: var(--muted); }
+.map-tabs button[aria-pressed="true"] { border-color: var(--orange); color: var(--orange-dark); background: #FFF7ED; }
+.map-tab-count:not(:empty) { display: inline-block; margin-left: 6px; min-width: 20px; padding: 0 6px; border-radius: 999px; background: var(--orange); color: #fff; font-size: 12px; line-height: 20px; text-align: center; }
 .zoom { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
 .zoom button { border: 0; background: #fff; padding: 6px 12px; cursor: pointer; font-weight: 700; color: var(--ink); }
 .zoom button + button { border-left: 1px solid var(--line); }
@@ -66,11 +77,11 @@ button, select, input { font: inherit; }
 .map-scroll:not(.zoomed) #map { max-height: 78vh; }
 
 .zone { cursor: pointer; outline: none; }
-.zone polygon { fill: transparent; stroke: transparent; stroke-width: 1.2; transition: fill .12s; }
+.zone polygon { fill: transparent; stroke: transparent; stroke-width: 2; vector-effect: non-scaling-stroke; transition: fill .12s; }
 .zone:hover polygon, .zone:focus-visible polygon { fill: rgba(13,148,136,.22); stroke: var(--teal); }
-.zone.selected polygon { fill: rgba(249,115,22,.55); stroke: var(--orange-dark); stroke-width: 1.4; }
+.zone.selected polygon { fill: rgba(249,115,22,.55); stroke: var(--orange-dark); stroke-width: 2.5; }
 .zone.selected:hover polygon { fill: rgba(249,115,22,.7); }
-.zone .mark { fill: #fff; stroke: var(--orange-dark); stroke-width: 1.2; opacity: 0; pointer-events: none; }
+.zone .mark { fill: #fff; stroke: var(--orange-dark); stroke-width: 1.5; vector-effect: non-scaling-stroke; opacity: 0; pointer-events: none; }
 .zone.selected .mark { opacity: 1; fill: var(--orange-dark); stroke: #fff; }
 
 .map-tip {
@@ -83,11 +94,11 @@ button, select, input { font: inherit; }
 .tip-state.off { background: #4B5563; }
 
 /* 集計 */
-.sum-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; padding-bottom: 14px; border-bottom: 1px dashed var(--line); }
+.sum-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 4px 12px; padding-bottom: 14px; border-bottom: 1px dashed var(--line); }
 .sum-label { margin: 0; font-size: 13px; color: var(--muted); font-weight: 700; }
-.sum-big { margin: 0; font-size: 40px; font-weight: 900; color: var(--orange); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.sum-big { white-space: nowrap; margin: 0; font-size: 40px; font-weight: 900; color: var(--orange); line-height: 1.1; font-variant-numeric: tabular-nums; }
 .sum-big small { font-size: 16px; margin-left: 2px; color: var(--ink); }
-.sum-sub { text-align: right; font-size: 13px; }
+.sum-sub { text-align: right; font-size: 13px; flex: 1 1 160px; }
 .sum-sub p { margin: 0; }
 .ward-sub { color: var(--muted); }
 
@@ -123,6 +134,8 @@ button, select, input { font: inherit; }
 .tables { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
 .ward h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin: 0 0 6px; font-size: 15px; padding-left: 10px; border-left: 5px solid var(--nishi); }
 .ward-kita h3 { border-left-color: var(--kita); }
+.ward-heiwa h3 { border-left-color: #22C55E; }
+.tables.three { grid-template-columns: 1fr 1fr 1fr; }
 .ward h3 span { font-size: 12px; color: var(--muted); font-weight: 500; }
 .ward h3 em { font-style: normal; font-size: 12px; color: var(--orange-dark); font-weight: 700; }
 table { width: 100%; border-collapse: collapse; font-size: 14px; }
@@ -142,6 +155,9 @@ tbody tr.selected { background: #FFEDD5; }
 
 .site-footer { text-align: center; font-size: 12px; color: var(--muted); padding: 24px 16px 90px; }
 
+@media (max-width: 1100px) {
+  .tables.three { grid-template-columns: 1fr 1fr; }
+}
 @media (max-width: 960px) {
   .layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "map" "side" "list"; }
   .side { position: static; }
@@ -150,7 +166,7 @@ tbody tr.selected { background: #FFEDD5; }
 }
 @media (max-width: 640px) {
   .site-header h1 { font-size: 20px; }
-  .tables { grid-template-columns: 1fr; }
+  .tables, .tables.three { grid-template-columns: 1fr; }
   .price-grid { grid-template-columns: 1fr 1fr 1fr; }
   .sum-big { font-size: 34px; }
   .sticky-total {

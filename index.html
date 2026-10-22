@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>同時配布エリア選択｜西区・北区 - 情報誌くれよん</title>
+<title>同時配布エリア選択 - 情報誌くれよん</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23F97316'/%3E%3Cpath d='M9 22V10l7 5 7-5v12' fill='none' stroke='white' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +16,8 @@
 <header class="site-header">
   <div class="wrap">
     <p class="eyebrow">情報誌くれよん　同時配布</p>
-    <h1>配布エリア選択 <span class="area-name" id="areaTitle">西区・北区</span></h1>
+    <h1>配布エリア選択</h1>
+    <nav class="area-tabs" id="areaTabs" aria-label="エリアの切り替え"></nav>
     <p class="lead">地図の区画をタップすると、配布可能部数と配布料金を自動で計算します。下の一覧からも選べます。</p>
   </div>
 </header>
@@ -26,11 +27,8 @@
   <!-- 地図 -->
   <section class="map-card" aria-label="配布エリアの地図">
     <div class="map-toolbar">
-      <div class="legend">
-        <span><i class="sw sw-nishi"></i>西区</span>
-        <span><i class="sw sw-kita"></i>北区</span>
-        <span><i class="sw sw-sel"></i>選択中</span>
-      </div>
+      <div class="map-tabs" id="mapTabs" aria-label="地図の切り替え"></div>
+      <div class="legend" id="legend"></div>
       <div class="zoom">
         <button type="button" id="zoomOut" aria-label="地図を縮小">－</button>
         <button type="button" id="zoomReset">全体</button>
@@ -94,11 +92,7 @@
   <section class="card list-card" aria-label="区画の一覧">
     <div class="list-head">
       <h2>区画一覧</h2>
-      <div class="bulk">
-        <button type="button" data-bulk="西">西区をすべて選択</button>
-        <button type="button" data-bulk="北">北区をすべて選択</button>
-        <button type="button" data-bulk="clear" class="danger">すべて解除</button>
-      </div>
+      <div class="bulk" id="bulk"></div>
     </div>
     <div class="tables" id="tables"></div>
     <p class="source">部数データ：<span id="source"></span></p>
@@ -116,6 +110,7 @@
 <footer class="site-footer">© 2026 株式会社ケイ・クリエイト　情報誌くれよん</footer>
 
 <script src="data/seihoku.js"></script>
+<script src="data/inazawa.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
