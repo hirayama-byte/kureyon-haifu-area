@@ -5,8 +5,10 @@
 (function () {
   'use strict';
 
+  // 区ごとの色 [線, 塗り]
+  const TONE = { nishi: ['#BE185D', '#F472B6'], kita: ['#0369A1', '#38BDF8'], heiwa: ['#15803D', '#4ADE80'] };
   const STYLE = {
-    normal:   tone => ({ color: tone === 'kita' ? '#0369A1' : '#BE185D', weight: 1.2, opacity: 0.85, fillColor: tone === 'kita' ? '#38BDF8' : '#F472B6', fillOpacity: 0.18 }),
+    normal:   tone => ({ color: TONE[tone][0], weight: 1.2, opacity: 0.85, fillColor: TONE[tone][1], fillOpacity: 0.18 }),
     hover:    () => ({ weight: 2.5, fillOpacity: 0.35 }),
     selected: () => ({ color: '#C2410C', weight: 2.5, opacity: 1, fillColor: '#F97316', fillOpacity: 0.55 })
   };

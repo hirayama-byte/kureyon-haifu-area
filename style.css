@@ -190,6 +190,7 @@ tbody tr.selected { background: #FFEDD5; }
 .label-toggle input { accent-color: var(--orange); }
 .zone-label { background: rgba(255,255,255,.92); border: 1px solid #BE185D; color: #831843; border-radius: 4px; padding: 0 3px; font: 700 11px/16px "Noto Sans JP", sans-serif; white-space: nowrap; transform: translate(-50%, -50%); pointer-events: none; }
 .zone-label-kita { border-color: #0369A1; color: #0C4A6E; }
+.zone-label-heiwa { border-color: #15803D; color: #14532D; }
 .zone-label.on { background: #C2410C; border-color: #C2410C; color: #fff; }
 .map-card .leaflet-container { font-family: "Noto Sans JP", sans-serif; }
 .map-card .map-tip { z-index: 500; }

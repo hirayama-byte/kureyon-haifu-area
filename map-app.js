@@ -15,6 +15,10 @@
 
   const groupOf = a => AREA.groups.find(g => g.id === a.group);
   const labelOf = a => `${groupOf(a).title} ${a.code}`;
+  // 地名が「祖父江7」のように番号と同じなら、地名は重ねて出さない
+  const nameOf = a => (a.name === a.group + a.code ? '' : a.name);
+  // 地図に出す番号: 北区は「北41」、祖父江・平和は「祖父江1」、それ以外は番号だけ
+  const shortOf = a => (a.group === '北' || a.group === '祖父江' || a.group === '平和' ? a.group : '') + a.code;
 
   // ---- エリア ----
   function buildAreaTabs() {
@@ -48,7 +52,7 @@
     for (const a of AREA.areas) {
       const tone = groupOf(a).tone;
       zones[a.key] = map.addZone(
-        { polys: a.polys, label: a.label, tone, text: (a.group === '北' ? '北' : '') + a.code },
+        { polys: a.polys, label: a.label, tone, text: shortOf(a) },
         { onClick: () => { toggle(a.key); showTip(a, true); }, onHover: on => (on ? showTip(a, false) : hideTip()) }
       );
     }
@@ -60,7 +64,7 @@
   function showTip(a, fromTap) {
     const tip = $('mapTip');
     const on = selected.has(a.key);
-    tip.innerHTML = `<b>${labelOf(a)}</b> ${a.name}<br>${fmt(a.copies)}部` +
+    tip.innerHTML = `<b>${labelOf(a)}</b> ${nameOf(a)}<br>${fmt(a.copies)}部` +
       (fromTap ? `<span class="tip-state ${on ? 'on' : 'off'}">${on ? '選択しました' : '解除しました'}</span>` : '');
     tip.hidden = false;
     clearTimeout(tipTimer);
@@ -116,6 +120,7 @@
     const box = $('tables');
     box.innerHTML = '';
     rows = {};
+    box.classList.toggle('three', AREA.groups.length >= 3);
     for (const grp of AREA.groups) {
       const list = AREA.areas.filter(a => a.group === grp.id);
       const total = list.reduce((s, a) => s + a.copies, 0);
