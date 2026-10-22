@@ -8,7 +8,7 @@
   // 料金の計算は price.js（map.html と共通）
   const { SIZE_PRICE, calcFee, fmt, fmtUnit } = window.HaifuPrice;
   const $ = id => document.getElementById(id);
-  // 部数の調整と代理店（extras.js）
+  // 部数の調整（extras.js）
   let X = null;
 
   // 状態
@@ -200,7 +200,7 @@
     const size = $('size').value;
     const fold = $('fold').value === '1';
     const ins = $('insert').value === '1';
-    return { list, rawTotal, adj, total, size, fold, ins, ...calcFee(total, size, fold, ins, X.agent()) };
+    return { list, rawTotal, adj, total, size, fold, ins, ...calcFee(total, size, fold, ins) };
   }
 
   function update() {
@@ -209,7 +209,6 @@
     X.render(r.list, r.adj);
     $('adjNote').hidden = !r.adj.amount;
     if (r.adj.amount) $('adjNote').textContent = `選択の合計 ${fmt(r.rawTotal)}部 − 調整 ${fmt(r.adj.amount)}部（${labelOf(r.adj.area)}：${fmt(r.adj.area.copies)}→${fmt(r.adj.area.copies - r.adj.amount)}部）`;
-    $('unitAgent').textContent = fmtUnit(r.unitAgent); $('agentLine').hidden = !r.unitAgent;
     $('selCount').textContent = r.list.length;
     const groupTotals = AREA.groups.map(g => {
       const l = r.list.filter(a => a.group === g.id);
@@ -277,7 +276,7 @@
     }
     if (r.adj.amount) lines.push(`調整：${labelOf(r.adj.area)} −${fmt(r.adj.amount)}部（${fmt(r.adj.area.copies)}→${fmt(r.adj.area.copies - r.adj.amount)}部）`);
     lines.push(`合計：${fmt(r.total)}部${r.adj.amount ? `（選択の合計 ${fmt(r.rawTotal)}部から調整）` : ''}`);
-    const opts = [r.fold ? `折加工+${r.unitFold}円` : '', r.ins ? `挟み込み+${r.unitIns}円` : '', r.unitAgent ? `代理店+${fmtUnit(r.unitAgent)}円` : ''].filter(Boolean).join('・');
+    const opts = [r.fold ? `折加工+${r.unitFold}円` : '', r.ins ? `挟み込み+${r.unitIns}円` : ''].filter(Boolean).join('・');
     lines.push(`チラシ${r.size}　単価${fmtUnit(r.unitSize)}円${opts ? '（' + opts + '）' : ''}＝1部${fmtUnit(r.unit)}円`);
     lines.push(`配布料金：${fmt(r.fee)}円（税別）`);
     return lines.join('\n');

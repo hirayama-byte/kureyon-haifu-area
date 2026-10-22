@@ -198,7 +198,7 @@ tbody tr.selected { background: #FFEDD5; }
   .geo-map { height: 62vh; }
 }
 
-/* ---- 部数の調整・代理店 ---- */
+/* ---- 部数の調整 ---- */
 .adjust { margin-top: 12px; padding: 10px; border: 1px dashed #D1D5DB; border-radius: 10px; background: #FAFAFA; }
 .adjust-title { margin: 0 0 6px; font-size: 12px; font-weight: 700; color: var(--muted); }
 .adjust-row { display: flex; gap: 6px; align-items: center; }
@@ -210,6 +210,4 @@ tbody tr.selected { background: #FFEDD5; }
 .adjust-round:hover { background: #F0FDFA; }
 .adjust-round:disabled { border-color: #D1D5DB; color: #9CA3AF; cursor: default; background: #fff; }
 .adjust-msg { margin: 6px 0 0; font-size: 12px; color: #B45309; }
-.agent-check { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 13px; font-weight: 700; cursor: pointer; }
-.agent-check input { width: 16px; height: 16px; accent-color: var(--orange); }
 .adj-note { margin: 4px 0 0; font-size: 12px; color: #B45309; line-height: 1.5; }

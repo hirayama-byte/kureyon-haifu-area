@@ -1,6 +1,5 @@
-// 部数の調整（端数合わせ）と代理店。index.html と map.html の両方で使う
+// 部数の調整（端数合わせ）。index.html と map.html の両方で使う
 //  - 調整: 選んだ区画の中から1つを選び、その区画の部数を減らす（例: 合計30,123部 → 1区画で123部減らして30,000部）
-//  - 代理店: チェックすると 1部あたり +1.0円（price.js の calcFee に agent として渡す）
 (function () {
   'use strict';
   const { fmt } = window.HaifuPrice;
@@ -66,7 +65,6 @@
       $('adjQty').addEventListener('input', e => { const v = e.target.value.replace(/[^0-9]/g, ''); st().amount = v ? +v : 0; onChange(); });
       $('adjQty').addEventListener('blur', () => onChange());
       $('adjRound').addEventListener('click', () => roundTo1000(getRawTotal()));
-      $('agent').addEventListener('change', onChange);
     }
 
     return {
@@ -74,17 +72,14 @@
       resolve,
       render,
       bind,
-      agent: () => $('agent').checked,
       clear() { const s = st(); s.key = ''; s.amount = 0; },
-      // URL: adj=w5:123（区画のURL記号:減らす部数）、ag=1
+      // URL: adj=w5:123（区画のURL記号:減らす部数）
       writeHash(p, adj) {
         if (adj.area && adj.amount) p.set('adj', adj.area.url + ':' + adj.amount);
-        if ($('agent').checked) p.set('ag', '1');
       },
       readHash(p, area) {
         const m = (p.get('adj') || '').match(/^([a-z0-9]+):(\d+)$/);
         if (m) { const a = area.areas.find(x => x.url === m[1]); if (a) adjBy[area.id] = { key: a.key, amount: +m[2] }; }
-        if (p.get('ag') === '1') $('agent').checked = true;
       }
     };
   }
