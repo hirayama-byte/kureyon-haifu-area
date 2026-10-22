@@ -43,25 +43,37 @@
       const msg = $('adjMsg');
       if (adj.over) { msg.hidden = false; msg.textContent = `${labelOf(adj.area)}は${fmt(adj.area.copies)}部までしか減らせません。`; }
       else if (dropped) { dropped = false; msg.hidden = false; msg.textContent = '調整していた区画の選択が外れたので、調整をやめました。'; }
+      else if (note) { msg.hidden = false; msg.textContent = note; note = ''; }
       else msg.hidden = true;
     }
 
-    // 千部単位にそろえる: 端数を、選んだ区画（未選択なら部数がいちばん多い区画）から減らす
+    // 千部単位にそろえる: 押すたびに前の調整をリセットして、今の選択の端数から計算し直す
+    //   端数を引く区画 = 今プルダウンで選んでいる区画（端数を引ける部数があれば）、
+    //                    引けなければ部数がいちばん多い区画
+    let note = '';      // 次の表示で1回だけ出す案内
     function roundTo1000(rawTotal) {
       const s = st();
       if (!lastList.length) return;
-      const rest = rawTotal % 1000;
-      let a = lastList.find(x => x.key === s.key);
-      if (!a) a = lastList.slice().sort((x, y) => y.copies - x.copies)[0];
-      const msg = $('adjMsg');
-      if (rest === 0) { s.key = ''; s.amount = 0; onChange(); msg.hidden = false; msg.textContent = 'すでに千部単位なので、調整はいりません。'; return; }
-      if (rest > a.copies) { msg.hidden = false; msg.textContent = `端数${fmt(rest)}部が${labelOf(a)}の部数より多いので、別の区画を選んでください。`; return; }
+      const chosen = lastList.find(x => x.key === s.key);
+      s.key = ''; s.amount = 0;             // 前の調整をリセット
+      const rest = rawTotal % 1000;         // 調整前の合計の端数
+      if (rest === 0) { note = 'すでに千部単位なので、調整はいりません。'; onChange(); return; }
+      const largest = lastList.slice().sort((x, y) => y.copies - x.copies)[0];
+      const a = chosen && chosen.copies >= rest ? chosen : largest;
+      if (a.copies < rest) { note = `端数${fmt(rest)}部を引ける区画がありません（いちばん多い区画でも${fmt(a.copies)}部）。`; onChange(); return; }
+      if (chosen && a !== chosen) note = `${labelOf(chosen)}では端数${fmt(rest)}部を引けないので、${labelOf(a)}で調整しました。`;
       s.key = a.key; s.amount = rest;
       onChange();
     }
 
     function bind(getRawTotal) {
-      $('adjArea').addEventListener('change', e => { const s = st(); s.key = e.target.value; if (!s.key) s.amount = 0; onChange(); });
+      $('adjArea').addEventListener('change', e => {
+        const s = st(); s.key = e.target.value;
+        const a = lastList.find(x => x.key === s.key);
+        // 区画を変えたとき、前の部数が新しい区画に入りきらなければ 0 からやり直す
+        if (!a || s.amount > a.copies) s.amount = 0;
+        onChange();
+      });
       $('adjQty').addEventListener('input', e => { const v = e.target.value.replace(/[^0-9]/g, ''); st().amount = v ? +v : 0; onChange(); });
       $('adjQty').addEventListener('blur', () => onChange());
       $('adjRound').addEventListener('click', () => roundTo1000(getRawTotal()));
