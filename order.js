@@ -351,6 +351,13 @@
     $('orderPass').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); tryUnlock(); } });
     $('orderMake').addEventListener('click', makePdf);
     $('orderClose').addEventListener('click', () => $('orderDlg').close());
+    // 配布開始日を選んだら、配布完了日は +5日 を自動で入れる（あとから変えられる）
+    $('oFrom').addEventListener('change', () => {
+      const v = $('oFrom').value; if (!v) return;
+      const [y, m, d] = v.split('-').map(Number);
+      const t = new Date(y, m - 1, d + 5);
+      $('oTo').value = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+    });
   }
 
   window.HaifuOrder = { init, save };

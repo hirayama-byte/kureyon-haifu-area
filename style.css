@@ -231,7 +231,6 @@ tbody tr.selected { background: #FFEDD5; }
 /* ---- 地図版：パソコンでは地図の枠を画面いっぱいに広げる（右の合計枠はそのまま、下の一覧も元の幅のまま） ---- */
 @media (min-width: 961px) {
   .layout-wide { max-width: none; }
-  .layout-wide .list-card { max-width: 844px; }
   .layout-wide .geo-map { height: calc(100vh - 150px); min-height: 520px; }
 }
 
@@ -273,3 +272,8 @@ tbody tr.selected { background: #FFEDD5; }
 .order-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 .order-actions button { padding: 9px 16px; }
 @media (max-width: 640px) { .order-grid { grid-template-columns: 1fr; } }
+
+/* 地図版の区画一覧: 列の数は map-app.js が横幅から決める */
+.layout-wide .tables { align-items: start; gap: 12px 16px; }
+.layout-wide .ward table { font-size: 13px; }
+.layout-wide .ward td, .layout-wide .ward th { padding: 4px 5px; }

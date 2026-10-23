@@ -183,34 +183,60 @@
     c.addEventListener('click', () => { selected.clear(); X.clear(); repaintAll(); update(); });
     box.appendChild(c);
   }
+  // 区画一覧: 画面の横幅に合わせて列の数を決め、区ごとの表を列に分けて並べる（下までスクロールしなくて済むように）
+  const COL_MIN = 240; // 1列の最小の幅(px)
   function buildTables() {
     const box = $('tables');
     box.innerHTML = '';
     rows = {};
-    box.classList.toggle('three', AREA.groups.length >= 3);
+    box.classList.remove('three');
+    const width = box.clientWidth || box.parentElement.clientWidth || 800;
+    const nCol = Math.max(1, Math.floor((width + 16) / (COL_MIN + 16)));
+    // 1列あたりの行数（見出しの分も1行と数える）。小さい区はまとめず、そのまま1列に入れる
+    const nRows = AREA.areas.length + AREA.groups.length;
+    const perCol = nCol === 1 ? Infinity : Math.max(8, Math.ceil(nRows / nCol));
+    box.style.gridTemplateColumns = nCol === 1 ? '' : `repeat(${nCol}, minmax(0, 1fr))`;
     for (const grp of AREA.groups) {
       const list = AREA.areas.filter(a => a.group === grp.id);
-      const total = list.reduce((s, a) => s + a.copies, 0);
-      const wrap = document.createElement('div');
-      wrap.className = 'ward ward-' + grp.tone;
-      wrap.innerHTML = `<h3>${grp.title}<span>${list.length}区画・計${fmt(total)}部</span><em class="ward-sel" data-ward-sel="${grp.id}"></em></h3>`;
-      const table = document.createElement('table');
-      table.innerHTML = '<thead><tr><th class="c-chk"></th><th class="c-no">番号</th><th>配布エリア</th><th class="c-num">可能部数</th></tr></thead>';
-      const tb = document.createElement('tbody');
-      for (const a of list) {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td class="c-chk"><input type="checkbox" aria-label="${labelOf(a)} ${a.name}"></td>` +
-          `<td class="c-no">${a.code}</td><td>${a.name}</td><td class="c-num">${fmt(a.copies)}</td>`;
-        tr.addEventListener('click', e => { if (e.target.tagName !== 'INPUT') toggle(a.key); });
-        tr.querySelector('input').addEventListener('change', () => toggle(a.key));
-        tb.appendChild(tr);
-        rows[a.key] = tr;
+      const total = list.reduce((s2, a) => s2 + a.copies, 0);
+      for (let i = 0; i < list.length; i += perCol) {
+        const part = list.slice(i, i + perCol);
+        const wrap = document.createElement('div');
+        wrap.className = 'ward ward-' + grp.tone;
+        wrap.innerHTML = i === 0
+          ? `<h3>${grp.title}<span>${list.length}区画・計${fmt(total)}部</span><em class="ward-sel" data-ward-sel="${grp.id}"></em></h3>`
+          : `<h3>${grp.title}<span>（続き）</span></h3>`;
+        const table = document.createElement('table');
+        table.innerHTML = '<thead><tr><th class="c-chk"></th><th class="c-no">番号</th><th>配布エリア</th><th class="c-num">可能部数</th></tr></thead>';
+        const tb = document.createElement('tbody');
+        for (const a of part) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td class="c-chk"><input type="checkbox" aria-label="${labelOf(a)} ${a.name}"></td>` +
+            `<td class="c-no">${a.code}</td><td>${a.name}</td><td class="c-num">${fmt(a.copies)}</td>`;
+          tr.addEventListener('click', e => { if (e.target.tagName !== 'INPUT') toggle(a.key); });
+          tr.querySelector('input').addEventListener('change', () => toggle(a.key));
+          tb.appendChild(tr);
+          rows[a.key] = tr;
+        }
+        table.appendChild(tb);
+        wrap.appendChild(table);
+        box.appendChild(wrap);
       }
-      table.appendChild(tb);
-      wrap.appendChild(table);
-      box.appendChild(wrap);
     }
   }
+  // 画面の幅が変わったら列を組み直す
+  let colTimer = null, lastCols = 0;
+  function relayoutTables() {
+    clearTimeout(colTimer);
+    colTimer = setTimeout(() => {
+      const w = $('tables').clientWidth;
+      const n = Math.max(1, Math.floor((w + 16) / (COL_MIN + 16)));
+      if (n === lastCols) return;
+      lastCols = n;
+      buildTables(); repaintAll(); update();
+    }, 150);
+  }
+
 
   // ---- 選択と計算 ----
   function toggle(key) {
@@ -348,7 +374,7 @@
       window.HaifuOrder.save(snapshot());
     });
     $('shareBtn').addEventListener('click', () => copyText(location.href, 'このページのURLをコピーしました。開くと同じ選択状態になります。'));
-    window.addEventListener('resize', () => map && map.resize());
+    window.addEventListener('resize', () => { if (map) map.resize(); relayoutTables(); });
     // 保存した選択を開くとき: URLの選択状態で読み直す
     window.HaifuOrder.init({ restore: url => { const h = url.split('#')[1] || ''; location.hash = h; location.reload(); } });
   }
