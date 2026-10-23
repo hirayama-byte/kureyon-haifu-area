@@ -246,7 +246,7 @@
     $('fee').textContent = fmt(r.fee);
     $('stickyCopies').textContent = fmt(r.total);
     $('stickyFee').textContent = fmt(r.fee);
-    document.title = `同時配布エリア選択｜${AREA.title} - 情報誌くれよん`;
+    document.title = `情報誌くれよん 配布エリア選択シート｜${AREA.title}`;
     writeHash(r);
   }
 
