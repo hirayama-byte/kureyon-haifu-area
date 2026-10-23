@@ -147,6 +147,9 @@ tbody tr.selected { background: #FFEDD5; }
 .c-chk { width: 28px; }
 .c-chk input { width: 16px; height: 16px; accent-color: var(--orange); cursor: pointer; }
 .c-no { width: 44px; font-weight: 700; font-variant-numeric: tabular-nums; }
+/* 地名は途中で改行しない（列の幅は map-app.js の colMin で地名に合わせる）。狭い画面では表を横にスクロール */
+.ward td, .ward th { white-space: nowrap; }
+.ward { overflow-x: auto; }
 .c-num { text-align: right; width: 76px; font-variant-numeric: tabular-nums; }
 .source { margin: 14px 0 0; font-size: 12px; color: var(--muted); }
 

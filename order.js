@@ -198,6 +198,9 @@
       g.fillStyle = o.color || '#111'; g.font = font(o.size || rowH * 0.62, o.bold ? 700 : 400);
       g.textBaseline = 'middle';
       let t = String(text);
+      // 長い地名は切らずに文字を小さくして収める（小さくしすぎない所まで。それでも入らなければ切る）
+      let fs0 = o.size || rowH * 0.62;
+      while (g.measureText(t).width > w - 6 && fs0 > rowH * 0.36) { fs0 *= 0.94; g.font = font(fs0, o.bold ? 700 : 400); }
       while (g.measureText(t).width > w - 6 && t.length > 1) t = t.slice(0, -1);
       const tx = o.align === 'right' ? x0 + w - 5 - g.measureText(t).width : o.align === 'center' ? x0 + (w - g.measureText(t).width) / 2 : x0 + 4;
       g.fillText(t, tx, y0 + h / 2 + 1);
@@ -213,8 +216,10 @@
       let cAll = 0, cSel = 0, cNow = 0;
       for (const a of c.list) {
         const on = q[a.key] > 0 || x.sel.includes(a.url);
-        // 地名が番号と同じ（祖父江7など）なら地名だけ、それ以外は「番号 地名」
-        const label = a.name === a.group + a.code ? a.name : `${a.code} ${a.name}`;
+        // 地名に番号が入っている（祖父江7・北方1・木曽川⑩・開明1 A1 など）なら地名だけ、それ以外は「番号 地名」
+        const circ = /^d+$/.test(a.code) && +a.code >= 10 && +a.code <= 20 ? '⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳'[a.code - 10] : null;
+        const hasCode = a.name.endsWith(a.code) || a.name.includes(' ' + a.code) || (circ && a.name.includes(circ)) || a.name === a.code;
+        const label = hasCode ? a.name : `${a.code} ${a.name}`;
         const adjMark = x.adj && x.adj.url === a.url;
         xx = x0;
         cell(xx, y, cw[0], rowH, label, { fill: tone[c.grp.tone] }); xx += cw[0];

@@ -186,14 +186,21 @@
     box.appendChild(c);
   }
   // 区画一覧: 画面の横幅に合わせて列の数を決め、区ごとの表を列に分けて並べる（下までスクロールしなくて済むように）
-  const COL_MIN = 240; // 1列の最小の幅(px)
+  const COL_MIN = 240; // 1列の最小の幅(px)。地名が長いエリアは、いちばん長い地名が1行に収まる幅まで広げる
+  const measure = document.createElement('canvas').getContext('2d');
+  function colMin() {
+    const td = document.querySelector('#tables td:nth-child(3)');
+    measure.font = td ? getComputedStyle(td).font : '14px sans-serif';
+    const longest = Math.max(0, ...AREA.areas.map(a => measure.measureText(a.name + (a.noMap ? '　地図なし' : '')).width));
+    return Math.max(COL_MIN, Math.ceil(longest) + 28 + 44 + 72 + 30); // チェック・番号・部数の列と余白
+  }
   function buildTables() {
     const box = $('tables');
     box.innerHTML = '';
     rows = {};
     box.classList.remove('three');
     const width = box.clientWidth || box.parentElement.clientWidth || 800;
-    const nCol = Math.max(1, Math.floor((width + 16) / (COL_MIN + 16)));
+    const nCol = Math.max(1, Math.floor((width + 16) / (colMin() + 16)));
     // 1列あたりの行数（見出しの分も1行と数える）。小さい区はまとめず、そのまま1列に入れる
     const nRows = AREA.areas.length + AREA.groups.length;
     const perCol = nCol === 1 ? Infinity : Math.max(8, Math.ceil(nRows / nCol));
