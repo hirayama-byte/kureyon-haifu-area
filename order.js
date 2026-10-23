@@ -89,7 +89,7 @@
     $('oCompany').innerHTML = staff.companies.map(c => `<option>${esc(c)}</option>`).join('');
     $('oCompany').value = localGet('haifu-company') || staff.companies[0];
     $('oEdition').innerHTML = staff.editions.map(c => `<option>${esc(c)}</option>`).join('');
-    $('oEdition').value = { seihoku: '西北版', inazawa: '一宮版', konan: '江南版', kiyosu: '清須版', kitanagoya: '岩倉版' }[x.areaId] || staff.editions[0];
+    $('oEdition').value = { seihoku: '西北版', inazawa: '一宮版', ichinomiya: '一宮版', konan: '江南版', kiyosu: '清須版', kitanagoya: '岩倉版' }[x.areaId] || staff.editions[0];
     $('oDate').value = iso(today);
     $('oFrom').value = ''; $('oTo').value = '';
     $('oClient').value = x.memo || '';
