@@ -89,7 +89,7 @@
     $('oCompany').innerHTML = staff.companies.map(c => `<option>${esc(c)}</option>`).join('');
     $('oCompany').value = localGet('haifu-company') || staff.companies[0];
     $('oEdition').innerHTML = staff.editions.map(c => `<option>${esc(c)}</option>`).join('');
-    $('oEdition').value = { seihoku: '西北版', inazawa: '一宮版', konan: '江南版' }[x.areaId] || staff.editions[0];
+    $('oEdition').value = { seihoku: '西北版', inazawa: '一宮版', konan: '江南版', kiyosu: '清須版' }[x.areaId] || staff.editions[0];
     $('oDate').value = iso(today);
     $('oFrom').value = ''; $('oTo').value = '';
     $('oClient').value = x.memo || '';
@@ -278,7 +278,8 @@
 
   async function drawMap(area, x, f) {
     const q = quantities(area, x);
-    const sel = area.areas.filter(a => x.sel.includes(a.url));
+    const sel = area.areas.filter(a => x.sel.includes(a.url) && a.polys.length);
+    const noMapSel = area.areas.filter(a => x.sel.includes(a.url) && !a.polys.length);
     let w = 180, s = 90, e = -180, n = -90;
     for (const a of sel) for (const poly of a.polys) for (const [lng, lat] of poly[0]) { if (lng < w) w = lng; if (lng > e) e = lng; if (lat < s) s = lat; if (lat > n) n = lat; }
     // まわりに少し余白（選択範囲の15%・最低300m）
@@ -307,7 +308,7 @@
     for (const t of tiles) if (t.im) g.drawImage(t.im, ox + (t.tx * 256 - lon2x(w, z)) * k, oy + (t.ty * 256 - lat2y(n, z)) * k, 256 * k + 1, 256 * k + 1);
     // 区画
     const path = a => { g.beginPath(); for (const poly of a.polys) for (const ring of poly) ring.forEach(([lng, lat], i) => (i ? g.lineTo(X(lng), Yp(lat)) : g.moveTo(X(lng), Yp(lat)))); };
-    for (const a of area.areas) { path(a); g.strokeStyle = 'rgba(190,24,93,.55)'; g.lineWidth = 2; g.stroke(); }
+    for (const a of area.areas.filter(v => v.polys.length)) { path(a); g.strokeStyle = 'rgba(190,24,93,.55)'; g.lineWidth = 2; g.stroke(); }
     for (const a of sel) { path(a); g.fillStyle = 'rgba(249,115,22,.42)'; g.fill('evenodd'); g.strokeStyle = '#C2410C'; g.lineWidth = 5; g.stroke(); }
     // 選択区画のラベル
     const fs = Math.max(4 * MM, Math.min(6 * MM, k * 9));
@@ -332,6 +333,7 @@
     const info = [`${sel.length}区画　合計 ${fmt(total)}部`, f.client ? `クライアント：${f.client}` : '', f.from || f.to ? `配布期間：${(f.from || '').replace(/-/g, '/')} ～ ${(f.to || '').replace(/-/g, '/')}` : ''].filter(Boolean).join('　／　');
     g.fillText(info, 8 * MM, 15 * MM);
     if (x.adj) { g.fillStyle = '#B45309'; g.font = font(3.2 * MM); g.fillText(`※ ${x.adj.label} は −${fmt(x.adj.amount)}部 調整（${fmt(x.adj.copies)}→${fmt(x.adj.copies - x.adj.amount)}部）`, W / 2, 15 * MM); }
+    if (noMapSel.length) { g.fillStyle = '#B45309'; g.font = font(3.2 * MM); g.fillText('※ 地図に場所がない区画も選択：' + noMapSel.map(a => a.group + a.code + '（' + fmt(q[a.key]) + '部）').join('・'), 8 * MM, H - 10 * MM); }
     g.fillStyle = '#6B7280'; g.font = font(2.6 * MM); g.fillText('地図：国土地理院　区画の境目は実際と数十メートルずれることがあります', 8 * MM, H - 5 * MM);
     return cv;
   }

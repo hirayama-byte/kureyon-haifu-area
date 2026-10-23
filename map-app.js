@@ -20,7 +20,7 @@
   // 地名が「祖父江7」のように番号と同じなら、地名は重ねて出さない
   const nameOf = a => (a.name === a.group + a.code ? '' : a.name);
   // 地図に出す番号: 北区は「北41」、祖父江・平和は「祖父江1」、それ以外は番号だけ
-  const shortOf = a => (['北', '祖父江', '平和', '大口', '扶桑', '岩倉'].includes(a.group) ? a.group : '') + a.code;
+  const shortOf = a => (['北', '祖父江', '平和', '大口', '扶桑', '岩倉', 'あま'].includes(a.group) ? a.group : '') + a.code;
 
   // ---- エリア ----
   function buildAreaTabs() {
@@ -54,6 +54,7 @@
     map = window.HaifuMap.create(el);
     zones = {};
     for (const a of AREA.areas) {
+      if (!a.polys.length) continue; // 地図に場所がない区画（一覧だけ）
       const tone = groupOf(a).tone;
       zones[a.key] = map.addZone(
         { polys: a.polys, label: a.label, tone, text: shortOf(a) },
@@ -102,6 +103,7 @@
     if (!circle) return;
     const r = +$('radius').value;
     circleHits = AREA.areas.filter(a => {
+      if (!a.polys.length) return false;
       const pts = samplesOf(a);
       return pts.filter(([lng, lat]) => distM(circle.lat, circle.lng, lat, lng) <= r).length / pts.length >= CIRCLE_SHARE;
     });
@@ -212,7 +214,7 @@
         for (const a of part) {
           const tr = document.createElement('tr');
           tr.innerHTML = `<td class="c-chk"><input type="checkbox" aria-label="${labelOf(a)} ${a.name}"></td>` +
-            `<td class="c-no">${a.code}</td><td>${a.name}</td><td class="c-num">${fmt(a.copies)}</td>`;
+            `<td class="c-no">${a.code}</td><td>${a.name}${a.noMap ? '<span class="no-map">地図なし</span>' : ''}</td><td class="c-num">${fmt(a.copies)}</td>`;
           tr.addEventListener('click', e => { if (e.target.tagName !== 'INPUT') toggle(a.key); });
           tr.querySelector('input').addEventListener('change', () => toggle(a.key));
           tb.appendChild(tr);

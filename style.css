@@ -281,3 +281,4 @@ tbody tr.selected { background: #FFEDD5; }
 .sw-iwakura { background: #EDE9FE; border: 1px solid #7C3AED; }
 .ward-iwakura h3 { border-left-color: #7C3AED; }
 .zone-label-iwakura { border-color: #7C3AED; color: #4C1D95; }
+.no-map { margin-left: 4px; padding: 0 4px; border-radius: 4px; background: #F3F4F6; color: #6B7280; font-size: 10px; font-weight: 700; }
