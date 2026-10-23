@@ -176,8 +176,14 @@
     box.innerHTML = '';
     for (const g of AREA.groups) {
       const b = document.createElement('button');
-      b.type = 'button'; b.textContent = `${g.title}をすべて選択`;
-      b.addEventListener('click', () => { AREA.areas.forEach(a => { if (a.group === g.id) selected.add(a.key); }); repaintAll(); update(); });
+      // 押すたびに「すべて選択」⇔「すべて解除」（その地域の区画がぜんぶ選ばれていたら解除）
+      b.type = 'button'; b.dataset.group = g.id; b.textContent = `${g.title}をすべて選択`;
+      b.addEventListener('click', () => {
+        const list = AREA.areas.filter(a => a.group === g.id);
+        const allOn = list.every(a => selected.has(a.key));
+        list.forEach(a => { if (allOn) selected.delete(a.key); else selected.add(a.key); });
+        repaintAll(); update();
+      });
       box.appendChild(b);
     }
     const c = document.createElement('button');
@@ -269,7 +275,16 @@
     return { list, rawTotal, adj, total, size, fold, ins, ...calcFee(total, size, fold, ins) };
   }
 
+  // 地域ごとのボタンの文字: ぜんぶ選ばれていれば「すべて解除」
+  function refreshBulk() {
+    document.querySelectorAll('#bulk button[data-group]').forEach(b => {
+      const g = AREA.groups.find(x => x.id === b.dataset.group); if (!g) return;
+      const allOn = AREA.areas.filter(a => a.group === g.id).every(a => selected.has(a.key));
+      b.textContent = `${g.title}をすべて${allOn ? '解除' : '選択'}`; b.classList.toggle('bulk-on', allOn);
+    });
+  }
   function update() {
+    refreshBulk();
     const r = calc();
     $('totalCopies').textContent = fmt(r.total);
     X.render(r.list, r.adj);
