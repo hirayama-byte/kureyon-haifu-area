@@ -216,10 +216,8 @@
       let cAll = 0, cSel = 0, cNow = 0;
       for (const a of c.list) {
         const on = q[a.key] > 0 || x.sel.includes(a.url);
-        // 地名に番号が入っている（祖父江7・北方1・木曽川⑩・開明1 A1 など）なら地名だけ、それ以外は「番号 地名」
-        const circ = /^d+$/.test(a.code) && +a.code >= 10 && +a.code <= 20 ? '⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳'[a.code - 10] : null;
-        const hasCode = a.name.endsWith(a.code) || a.name.includes(' ' + a.code) || (circ && a.name.includes(circ)) || a.name === a.code;
-        const label = hasCode ? a.name : `${a.code} ${a.name}`;
+        // 地名に番号が入っている（祖父江7・北方1・木曽川⑩・開明1 A1 など）なら地名だけ、それ以外は「番号 地名」（label.js）
+        const label = window.HaifuLabel.tableLabel(a);
         const adjMark = x.adj && x.adj.url === a.url;
         xx = x0;
         cell(xx, y, cw[0], rowH, label, { fill: tone[c.grp.tone] }); xx += cw[0];
@@ -331,7 +329,7 @@
     for (const a of sel) {
       const lx = X(a.label[0]), ly = Yp(a.label[1]);
       const adj = x.adj && x.adj.url === a.url;
-      const t1 = (['北', '祖父江', '平和', '大口', '扶桑', '岩倉'].includes(a.group) ? a.group : '') + a.code, t2 = fmt(q[a.key]) + '部' + (adj ? '※' : '');
+      const t1 = window.HaifuLabel.mapLabel(a), t2 = fmt(q[a.key]) + '部' + (adj ? '※' : '');
       g.font = font(fs, 700); const w1 = g.measureText(t1).width; g.font = font(fs * 0.8, 700); const w2 = g.measureText(t2).width;
       const bw = Math.max(w1, w2) + fs * 0.8, bh = fs * 2.2;
       g.fillStyle = adj ? '#FDE047' : '#fff'; g.strokeStyle = '#C2410C'; g.lineWidth = 3;

@@ -191,7 +191,7 @@ tbody tr.selected { background: #FFEDD5; }
 .addr-msg { margin: 0; padding: 6px 12px; font-size: 13px; color: var(--teal); background: #F0FDFA; border-bottom: 1px solid var(--line); }
 .label-toggle { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); cursor: pointer; }
 .label-toggle input { accent-color: var(--orange); }
-.zone-label { background: rgba(255,255,255,.92); border: 1px solid #BE185D; color: #831843; border-radius: 4px; padding: 0 3px; font: 700 11px/16px "Noto Sans JP", sans-serif; white-space: nowrap; transform: translate(-50%, -50%); pointer-events: none; }
+.zone-label { background: rgba(255,255,255,.92); border: 1px solid #BE185D; color: #831843; border-radius: 4px; padding: 0 4px; font: 700 13px/19px "Noto Sans JP", sans-serif; white-space: nowrap; transform: translate(-50%, -50%); pointer-events: none; }
 .zone-label-kita { border-color: #0369A1; color: #0C4A6E; }
 .zone-label-heiwa { border-color: #15803D; color: #14532D; }
 .zone-label.on { background: #C2410C; border-color: #C2410C; color: #fff; }

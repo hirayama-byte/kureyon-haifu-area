@@ -19,8 +19,8 @@
   const labelOf = a => `${groupOf(a).title} ${a.code}`;
   // 地名が「祖父江7」のように番号と同じなら、地名は重ねて出さない
   const nameOf = a => (a.name === a.group + a.code ? '' : a.name);
-  // 地図に出す番号: 北区は「北41」、祖父江・平和は「祖父江1」、それ以外は番号だけ
-  const shortOf = a => (['北', '祖父江', '平和', '大口', '扶桑', '岩倉', 'あま'].includes(a.group) ? a.group : '') + a.code;
+  // 地図に出す呼び名: 一覧の地名に番号が入っていれば地名（北方1 など）、なければ番号（label.js）
+  const shortOf = window.HaifuLabel.mapLabel;
 
   // ---- エリア ----
   function buildAreaTabs() {
