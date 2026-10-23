@@ -287,6 +287,17 @@
     return area.id;
   }
 
+  // ---- 保存用のスナップショット（order.js に渡す） ----
+  function snapshot() {
+    const r = calc();
+    return {
+      savedAt: Date.now(), areaId: AREA.id, areaTitle: AREA.title, url: location.href,
+      sel: r.list.map(a => a.url), size: r.size, fold: r.fold, ins: r.ins,
+      adj: r.adj.amount ? { url: r.adj.area.url, amount: r.adj.amount, copies: r.adj.area.copies, label: labelOf(r.adj.area) + (nameOf(r.adj.area) ? ' ' + nameOf(r.adj.area) : '') } : null,
+      rawTotal: r.rawTotal, total: r.total, fee: r.fee, text: summaryText()
+    };
+  }
+
   // ---- コピー ----
   function summaryText() {
     const r = calc();
@@ -333,10 +344,13 @@
     $('copyBtn').addEventListener('click', () => {
       const t = summaryText();
       if (!t) { flash('区画がまだ選ばれていません。'); return; }
-      copyText(t, '選択内容をコピーしました。メールやLINEに貼り付けられます。');
+      copyText(t, '選択内容をコピーしました。メールやLINEに貼り付けられます。下の「保存した選択」にも残しました。');
+      window.HaifuOrder.save(snapshot());
     });
     $('shareBtn').addEventListener('click', () => copyText(location.href, 'このページのURLをコピーしました。開くと同じ選択状態になります。'));
     window.addEventListener('resize', () => map && map.resize());
+    // 保存した選択を開くとき: URLの選択状態で読み直す
+    window.HaifuOrder.init({ restore: url => { const h = url.split('#')[1] || ''; location.hash = h; location.reload(); } });
   }
 
   init();

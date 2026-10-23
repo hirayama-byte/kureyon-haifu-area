@@ -108,6 +108,12 @@
       </div>
       <p class="copied" id="copied" hidden></p>
     </section>
+    <section class="card saved" aria-label="保存した選択">
+      <div class="saved-head"><h2>保存した選択</h2><span class="saved-count" id="savedCount">0/18</span></div>
+      <p class="saved-help">「選択内容をコピー」で保存（このパソコンのこのブラウザだけ・18件まで。古いものから消えます）</p>
+      <ul class="saved-list" id="savedList"></ul>
+      <p class="copied" id="savedMsg" hidden></p>
+    </section>
   </aside>
 
   <!-- 一覧 -->
@@ -128,6 +134,37 @@
   <span>料金 <b id="stickyFee">0</b>円（税別）</span>
 </div>
 
+
+<!-- 申込書（スタッフ用） -->
+<dialog class="order-dlg" id="orderDlg" aria-labelledby="orderTitle">
+  <h2 id="orderTitle">配布会社向け申込書（PDF・A3 2枚）</h2>
+  <div id="orderLock">
+    <p>スタッフ用です。パスワードを入れてください。</p>
+    <div class="order-pass"><input type="password" id="orderPass" inputmode="numeric" autocomplete="off" aria-label="パスワード"><button type="button" id="orderUnlock">確認</button></div>
+  </div>
+  <div id="orderForm" hidden>
+    <div class="order-grid">
+      <label>配布会社<select id="oCompany"></select></label>
+      <label>申込日<input type="date" id="oDate"></label>
+      <label>配布エリア（版）<select id="oEdition"></select></label>
+      <label>担当者<input type="text" id="oStaff" placeholder="例：平山竜也"></label>
+      <label>配布期間（開始）<input type="date" id="oFrom"></label>
+      <label>配布期間（終了）<input type="date" id="oTo"></label>
+      <label class="wide">クライアント名<input type="text" id="oClient"></label>
+      <label class="wide">備考（納品）<input type="text" id="oNote"></label>
+      <label class="wide">依頼事項<input type="text" id="oReq"></label>
+      <label>単価（部数）<input type="number" step="0.1" id="oUnit"></label>
+      <label id="oFoldRow">単価（折り加工）<input type="number" step="0.1" id="oFoldUnit"></label>
+      <label id="oInsRow">単価（挟み込み）<input type="number" step="0.1" id="oInsUnit"></label>
+    </div>
+    <p class="order-note">1枚目：エリア別配布部数と注文書（A3横）／2枚目：選んだ区画の地図（A3）</p>
+  </div>
+  <p class="order-err" id="orderErr" hidden></p>
+  <div class="order-actions">
+    <button type="button" class="btn-ghost" id="orderClose">閉じる</button>
+    <button type="button" class="btn-primary" id="orderMake">PDFをダウンロード（2枚）</button>
+  </div>
+</dialog>
 <footer class="site-footer">© 2026 株式会社ケイ・クリエイト　情報誌くれよん</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -135,6 +172,9 @@
 <script src="data/inazawa-geo.js"></script>
 <script src="price.js"></script>
 <script src="extras.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="data/staff.enc.js"></script>
+<script src="order.js"></script>
 <script src="map-adapter.js"></script>
 <script src="map-app.js"></script>
 </body>

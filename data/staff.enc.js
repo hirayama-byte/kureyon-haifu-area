@@ -1,0 +1,2 @@
+// 社内向けの設定（暗号化済み。make-staff-config.js で作成）
+window.HAIFU_STAFF_ENC = {"iter":200000,"salt":"oGTnXpL7M1dZ8SQbNBIXhQ==","iv":"Qr+sI54VNAIaPkdc","data":"oMebKpmBtoBQygVDtsEVNC+C0UfNcmY+48RAIk/YdVG9ZriGXRdjZzC2lz2FWUbdIRV5slCLnugDW+dE6tKLNyos7aj292VCuBLUEDj6Sv3Pcmu4dyrjbT5+sBm8yEuzjicOcr1wjITmyl8qWqlr6qmsJM6sj9VtDuvfF/30+44LB8wOqnIqx1wfb9iYBRIuKM+trhz6bzeB1wGsNRJGs7utl0HlyKw7ZEikC46HYB2ge9/2wyLiCLeDVTEeyyE/gsOfSKFvNBDy/IGT7xIVw0y/Pl0FipwlTFmRPWK0JLdKK0m351Ri2BvM7UpS0Fhfe7c+4WkcNlXIbN8Y4IDkK9/TmxZdCWWOQCwXLyy2okgUfg=="};
