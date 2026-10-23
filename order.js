@@ -89,7 +89,7 @@
     $('oCompany').innerHTML = staff.companies.map(c => `<option>${esc(c)}</option>`).join('');
     $('oCompany').value = localGet('haifu-company') || staff.companies[0];
     $('oEdition').innerHTML = staff.editions.map(c => `<option>${esc(c)}</option>`).join('');
-    $('oEdition').value = { seihoku: '西北版', inazawa: '一宮版' }[x.areaId] || staff.editions[0];
+    $('oEdition').value = { seihoku: '西北版', inazawa: '一宮版', konan: '江南版' }[x.areaId] || staff.editions[0];
     $('oDate').value = iso(today);
     $('oFrom').value = ''; $('oTo').value = '';
     $('oClient').value = x.memo || '';
@@ -191,7 +191,7 @@
       const tx = o.align === 'right' ? x0 + w - 5 - g.measureText(t).width : o.align === 'center' ? x0 + (w - g.measureText(t).width) / 2 : x0 + 4;
       g.fillText(t, tx, y0 + h / 2 + 1);
     };
-    const tone = { nishi: '#FCE7F3', kita: '#E0F2FE', heiwa: '#DCFCE7' };
+    const tone = { nishi: '#FCE7F3', kita: '#E0F2FE', heiwa: '#DCFCE7', iwakura: '#EDE9FE' };
     let sumAll = 0, sumSel = 0, sumNow = 0;
     cols.forEach((c, i) => {
       const x0 = L + i * (colW + gap);
@@ -314,7 +314,7 @@
     for (const a of sel) {
       const lx = X(a.label[0]), ly = Yp(a.label[1]);
       const adj = x.adj && x.adj.url === a.url;
-      const t1 = (a.group === '北' || a.group === '祖父江' || a.group === '平和' ? a.group : '') + a.code, t2 = fmt(q[a.key]) + '部' + (adj ? '※' : '');
+      const t1 = (['北', '祖父江', '平和', '大口', '扶桑', '岩倉'].includes(a.group) ? a.group : '') + a.code, t2 = fmt(q[a.key]) + '部' + (adj ? '※' : '');
       g.font = font(fs, 700); const w1 = g.measureText(t1).width; g.font = font(fs * 0.8, 700); const w2 = g.measureText(t2).width;
       const bw = Math.max(w1, w2) + fs * 0.8, bh = fs * 2.2;
       g.fillStyle = adj ? '#FDE047' : '#fff'; g.strokeStyle = '#C2410C'; g.lineWidth = 3;

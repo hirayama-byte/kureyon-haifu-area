@@ -4,7 +4,7 @@
   'use strict';
 
   // 区ごとの色 [線, 塗り]
-  const TONE = { nishi: ['#BE185D', '#F472B6'], kita: ['#0369A1', '#38BDF8'], heiwa: ['#15803D', '#4ADE80'] };
+  const TONE = { nishi: ['#BE185D', '#F472B6'], kita: ['#0369A1', '#38BDF8'], heiwa: ['#15803D', '#4ADE80'], iwakura: ['#7C3AED', '#C4B5FD'] };
   const STYLE = {
     normal:   tone => ({ color: TONE[tone][0], weight: 1.2, opacity: 0.85, fillColor: TONE[tone][1], fillOpacity: 0.18, dashArray: null }),
     hover:    () => ({ weight: 2.5, fillOpacity: 0.35 }),

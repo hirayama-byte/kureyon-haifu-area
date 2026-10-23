@@ -20,7 +20,7 @@
   // 地名が「祖父江7」のように番号と同じなら、地名は重ねて出さない
   const nameOf = a => (a.name === a.group + a.code ? '' : a.name);
   // 地図に出す番号: 北区は「北41」、祖父江・平和は「祖父江1」、それ以外は番号だけ
-  const shortOf = a => (a.group === '北' || a.group === '祖父江' || a.group === '平和' ? a.group : '') + a.code;
+  const shortOf = a => (['北', '祖父江', '平和', '大口', '扶桑', '岩倉'].includes(a.group) ? a.group : '') + a.code;
 
   // ---- エリア ----
   function buildAreaTabs() {
