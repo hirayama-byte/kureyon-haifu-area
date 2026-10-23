@@ -292,7 +292,7 @@
   // ---- URL に選択を残す（配布マップ版と同じ書き方） ----
   function writeHash(r) {
     const p = new URLSearchParams();
-    if (AREA !== AREAS[0]) p.set('area', AREA.id);
+    p.set('area', AREA.id); // エリアの並びを変えても開けるように、いつも書く
     const sel = AREA.areas.filter(a => selected.has(a.key)).map(a => a.url).join(',');
     if (sel) p.set('sel', sel);
     if (r.size !== 'A4') p.set('size', r.size);
@@ -304,7 +304,8 @@
   }
   function readHash() {
     const p = new URLSearchParams(location.hash.slice(1));
-    const area = AREAS.find(a => a.id === p.get('area')) || AREAS[0];
+    // area が無いのは、西区・北区が先頭だったころのURL（2026-10-23 まで）
+    const area = AREAS.find(a => a.id === (p.get('area') || (p.get('sel') ? 'seihoku' : ''))) || AREAS[0];
     const byUrl = Object.fromEntries(area.areas.map(a => [a.url, a.key]));
     const set = selectedBy[area.id] = new Set();
     for (const t of (p.get('sel') || '').split(',')) if (byUrl[t]) set.add(byUrl[t]);

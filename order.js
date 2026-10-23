@@ -22,7 +22,7 @@
     if (!store(list)) { alertMsg('このブラウザでは保存できませんでした（プライベートモードなど）。'); return; }
     render();
   }
-  function remove(id) { store(load().filter(x => x.id !== id)); render(); }
+  function remove(ids) { const del = new Set([].concat(ids)); store(load().filter(x => !del.has(x.id))); render(); }
   function setMemo(id, memo) { const list = load(); const x = list.find(v => v.id === id); if (x) { x.memo = memo; store(list); } }
   function alertMsg(t) { const m = $('savedMsg'); m.textContent = t; m.hidden = false; clearTimeout(alertMsg.t); alertMsg.t = setTimeout(() => { m.hidden = true; }, 3000); }
 
@@ -30,11 +30,13 @@
     const list = load();
     const box = $('savedList');
     $('savedCount').textContent = `${list.length}/${MAX}`;
+    $('savedBulk').hidden = !list.length; $('savedAll').checked = false;
     if (!list.length) { box.innerHTML = '<li class="saved-empty">「選択内容をコピー」を押すと、ここに保存されます。</li>'; return; }
     box.innerHTML = list.map(x => {
       const d = new Date(x.savedAt);
       const when = `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
       return `<li data-id="${x.id}">
+        <input type="checkbox" class="saved-check" aria-label="まとめて削除する対象に選ぶ">
         <div class="saved-main">
           <input class="saved-memo" value="${esc(x.memo)}" placeholder="メモ（クライアント名など）" aria-label="メモ">
           <p class="saved-sum"><b>${esc(x.areaTitle)}</b> ${x.sel.length}区画・<b>${fmt(x.total)}部</b>・${fmt(x.fee)}円<span>${when}</span></p>
@@ -46,6 +48,15 @@
         </div>
       </li>`;
     }).join('');
+    checkedChanged();
+  }
+
+  // チェックした数を「選んだものを削除」ボタンに出す
+  function checkedIds() { return [...document.querySelectorAll('#savedList .saved-check:checked')].map(c => c.closest('li').dataset.id); }
+  function checkedChanged() {
+    const n = checkedIds().length, all = document.querySelectorAll('#savedList .saved-check').length;
+    $('savedDelChecked').disabled = !n; $('savedDelChecked').textContent = n ? `選んだ ${n}件を削除` : '選んだものを削除';
+    $('savedAll').checked = !!all && n === all; $('savedAll').indeterminate = n > 0 && n < all;
   }
 
   // ---------------- スタッフ用（パスワード） ----------------
@@ -89,7 +100,7 @@
     $('oCompany').innerHTML = staff.companies.map(c => `<option>${esc(c)}</option>`).join('');
     $('oCompany').value = localGet('haifu-company') || staff.companies[0];
     $('oEdition').innerHTML = staff.editions.map(c => `<option>${esc(c)}</option>`).join('');
-    $('oEdition').value = { seihoku: '西北版', inazawa: '一宮版', ichinomiya: '一宮版', konan: '江南版', kiyosu: '清須版', kitanagoya: '岩倉版' }[x.areaId] || staff.editions[0];
+    $('oEdition').value = { seihoku: '西北版', inazawa: '一宮版', ichinomiya: '一宮版', konan: '江南版', kiyosu: '清須版', kitanagoya: '岩倉版', tsushima: '津島版' }[x.areaId] || staff.editions[0];
     $('oDate').value = iso(today);
     $('oFrom').value = ''; $('oTo').value = '';
     $('oClient').value = x.memo || '';
@@ -348,7 +359,16 @@
       if (b.dataset.act === 'open') opts.restore(item.url);
       if (b.dataset.act === 'pdf') openOrder(item);
     });
-    $('savedList').addEventListener('change', e => { if (e.target.classList.contains('saved-memo')) setMemo(e.target.closest('li').dataset.id, e.target.value.trim()); });
+    $('savedList').addEventListener('change', e => {
+      if (e.target.classList.contains('saved-memo')) setMemo(e.target.closest('li').dataset.id, e.target.value.trim());
+      if (e.target.classList.contains('saved-check')) checkedChanged();
+    });
+    $('savedAll').addEventListener('change', () => { document.querySelectorAll('#savedList .saved-check').forEach(c => { c.checked = $('savedAll').checked; }); checkedChanged(); });
+    $('savedDelChecked').addEventListener('click', () => {
+      const ids = checkedIds(); if (!ids.length) return;
+      if (!confirm(`チェックした ${ids.length}件の保存を削除します。元に戻せません。よろしいですか？`)) return;
+      remove(ids); alertMsg(`${ids.length}件を削除しました。`);
+    });
     $('orderUnlock').addEventListener('click', tryUnlock);
     $('orderPass').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); tryUnlock(); } });
     $('orderMake').addEventListener('click', makePdf);
