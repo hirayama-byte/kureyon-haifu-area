@@ -187,10 +187,15 @@
     const tableTop = T + 10 * MM;
     const sideW = 92 * MM;
     const gap = 3 * MM;
-    const colW = Math.min(62 * MM, (R - L - sideW - gap * cols.length) / cols.length);
     // 下の注文書（約65mm）を残して、表で紙面を使い切る
     const rowH = Math.min(6 * MM, (A3.h - tableTop - 75 * MM) / (rowsMax + 2));
-    const cw = [0.46, 0.2, 0.12, 0.22].map(r => r * colW); // 配布エリア / 可能部数 / 選択 / 今回
+    // 列の幅: ふだんは 62mm。長い地名があるときは、紙の幅が許すかぎり広げる（地名の欄が 1行に収まるように）
+    g.font = font(rowH * 0.5, 400);
+    const longest = Math.max(...area.areas.map(a => g.measureText(window.HaifuLabel.tableLabel(a)).width)) + 10;
+    const room = (R - L - sideW - gap * cols.length) / cols.length;
+    const nameR = 0.46;
+    const colW = Math.min(room, Math.max(62 * MM, longest / nameR));
+    const cw = [nameR, 0.2, 0.12, 0.22].map(r => r * colW); // 配布エリア / 可能部数 / 選択 / 今回
     const cell = (x0, y0, w, h, text, o = {}) => {
       if (o.fill) { g.fillStyle = o.fill; g.fillRect(x0, y0, w, h); }
       g.strokeStyle = '#9CA3AF'; g.lineWidth = 1; g.strokeRect(x0, y0, w, h);
@@ -200,7 +205,7 @@
       let t = String(text);
       // 長い地名は切らずに文字を小さくして収める（小さくしすぎない所まで。それでも入らなければ切る）
       let fs0 = o.size || rowH * 0.62;
-      while (g.measureText(t).width > w - 6 && fs0 > rowH * 0.36) { fs0 *= 0.94; g.font = font(fs0, o.bold ? 700 : 400); }
+      while (g.measureText(t).width > w - 6 && fs0 > rowH * 0.25) { fs0 *= 0.94; g.font = font(fs0, o.bold ? 700 : 400); }
       while (g.measureText(t).width > w - 6 && t.length > 1) t = t.slice(0, -1);
       const tx = o.align === 'right' ? x0 + w - 5 - g.measureText(t).width : o.align === 'center' ? x0 + (w - g.measureText(t).width) / 2 : x0 + 4;
       g.fillText(t, tx, y0 + h / 2 + 1);
