@@ -316,3 +316,7 @@ tbody tr.selected { background: #FFEDD5; }
 .circle-bar .circle-omakase { background: var(--orange); border-color: var(--orange); color: #fff; }
 .circle-bar .circle-omakase:hover { background: var(--orange-dark); }
 .circle-msg { flex-basis: 100%; margin: 0; color: #7C2D12; font-weight: 700; }
+
+/* 合計部数の右のリセット */
+.sum-sub .reset-btn { display: block; margin: 0 0 6px auto; border: 1px solid #FCA5A5; background: #fff; color: #B91C1C; border-radius: 999px; padding: 3px 14px; font-size: 12px; font-weight: 700; cursor: pointer; }
+.sum-sub .reset-btn:hover { background: #FEF2F2; }

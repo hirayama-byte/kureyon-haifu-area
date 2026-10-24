@@ -467,6 +467,12 @@
     $('circleAdd').addEventListener('click', addCircle);
     $('circleClear').addEventListener('click', hideCircle);
     $('circleOmakase').addEventListener('click', circleOmakase);
+    // リセット: 選んだ区画・部数の調整・円とピン・住所の目印・おまかせの案内を消す（チラシサイズなどの設定はそのまま）
+    $('resetAll').addEventListener('click', () => {
+      selected.clear(); X.clear(); hideCircle(); map.hideHome();
+      ['omMsg', 'circleMsg'].forEach(id => { $(id).hidden = true; });
+      repaintAll(); update();
+    });
     $('circleCopies').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); circleOmakase(); } });
     $('circleCopies').addEventListener('blur', e => { const v = +e.target.value.replace(/[^0-9]/g, ''); e.target.value = v ? fmt(v) : ''; });
     $('addrForm').addEventListener('submit', e => { e.preventDefault(); searchAddress($('addrInput').value); });
