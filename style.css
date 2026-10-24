@@ -295,3 +295,15 @@ tbody tr.selected { background: #FFEDD5; }
 
 /* 地域ごとの「すべて選択」が解除ボタンになっているとき */
 #bulk button.bulk-on { background: #FFF7ED; border-color: var(--orange); color: var(--orange-dark); }
+
+/* おまかせ選択 */
+.om-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: #FFF7ED; font-size: 13px; margin: 0; }
+.om-title { font-weight: 700; color: var(--orange-dark); }
+.om-bar input { padding: 5px 8px; border: 1px solid #FED7AA; border-radius: 8px; background: #fff; font-size: 13px; }
+#omAddr { flex: 1 1 260px; min-width: 0; }
+#omCopies { width: 120px; text-align: right; }
+.om-bar button { border: 1px solid var(--orange); background: var(--orange); color: #fff; border-radius: 999px; padding: 4px 16px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.om-bar button:hover { background: var(--orange-dark); }
+.om-help { flex-basis: 100%; color: var(--muted); font-size: 11px; }
+.om-msg { flex-basis: 100%; margin: 0; color: #7C2D12; font-weight: 700; }
+.home-pin span { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background: #DC2626; color: #fff; font-size: 17px; border: 3px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.4); box-sizing: border-box; }

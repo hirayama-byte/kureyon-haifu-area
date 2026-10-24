@@ -47,6 +47,14 @@
       <button type="button" class="circle-add" id="circleAdd" hidden>この円の区画を追加</button>
       <button type="button" class="circle-clear" id="circleClear" hidden>円を消す</button>
     </div>
+    <form class="om-bar" id="omForm">
+      <span class="om-title">おまかせ選択</span>
+      <input type="search" id="omAddr" placeholder="住所（例：一宮市木曽川町里小牧寺東125）" aria-label="基準の住所">
+      <input type="text" id="omCopies" inputmode="numeric" placeholder="部数（例：20000）" aria-label="部数">
+      <button type="submit">おまかせ</button>
+      <span class="om-help">住所から近い区画を選び、いちばん遠い区画で端数を調整して、ちょうどの部数にします</span>
+      <p class="om-msg" id="omMsg" hidden></p>
+    </form>
     <p class="addr-msg" id="addrMsg" hidden></p>
     <div class="geo-map" id="geoMap"></div>
     <div class="map-tip" id="mapTip" hidden></div>

@@ -50,6 +50,7 @@
   function buildMap() {
     const el = $('geoMap');
     hideCircle();
+    if (map) map.hideHome();
     if (map) map.destroy();
     map = window.HaifuMap.create(el);
     zones = {};
@@ -138,6 +139,70 @@
     circleHits.forEach(a => selected.add(a.key));
     repaintAll();
     update();
+  }
+
+  // ---- 住所 → 緯度経度（国土地理院の住所検索）。配布エリアの近くの結果を優先 ----
+  async function geocode(q) {
+    // つながらないときは少し待って、もう1回だけ
+    let all;
+    for (let t = 0; ; t++) {
+      try { const res = await fetch('https://msearch.gsi.go.jp/address-search/AddressSearch?q=' + encodeURIComponent(q)); all = await res.json(); break; }
+      catch (err) { if (t >= 1) throw err; await new Promise(r => setTimeout(r, 800)); }
+    }
+    const [w, s, e, n] = areaBounds();
+    const near = x => { const [lng, lat] = x.geometry.coordinates; return lng > w - 0.01 && lng < e + 0.01 && lat > s - 0.01 && lat < n + 0.01; };
+    const list = all.filter(near).concat(all.filter(x => !near(x) && /愛知県/.test(x.properties.title)));
+    if (!list.length) return null;
+    const [lng, lat] = list[0].geometry.coordinates;
+    return { lat, lng, title: list[0].properties.title };
+  }
+
+  // ---- おまかせ選択: 住所から近い区画を順に足し、指定の部数に届いたら、いちばん遠い区画で超えた分を減らす ----
+  // 近さ = 住所から区画のふちまでの距離（住所が区画の中なら 0）。同じなら区画の番号の位置に近いほう
+  function distToArea(a, lat, lng) {
+    if (inArea(a, lng, lat)) return 0;
+    const kx = 111320 * Math.cos(lat * Math.PI / 180), ky = 110574;
+    let best = Infinity;
+    for (const poly of a.polys) for (const ring of poly) for (let i = 1; i < ring.length; i++) {
+      const ax = (ring[i - 1][0] - lng) * kx, ay = (ring[i - 1][1] - lat) * ky, bx = (ring[i][0] - lng) * kx, by = (ring[i][1] - lat) * ky;
+      const dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy;
+      const t = L2 ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / L2)) : 0;
+      best = Math.min(best, Math.hypot(ax + t * dx, ay + t * dy));
+    }
+    return best;
+  }
+  async function omakase() {
+    const msg = $('omMsg'); msg.hidden = false;
+    const q = $('omAddr').value.trim();
+    const target = +$('omCopies').value.replace(/[^0-9]/g, '');
+    if (!q) { msg.textContent = '住所を入れてください。'; return; }
+    if (!target) { msg.textContent = '部数を入れてください。'; return; }
+    msg.textContent = '住所を探しています…';
+    let pt;
+    try { pt = await geocode(q); } catch (e) { msg.textContent = '住所の検索ができませんでした。時間をおいて試してください。'; return; }
+    if (!pt) { msg.textContent = `「${q}」が見つかりませんでした。町名や番地を見直してください。`; return; }
+    const cand = AREA.areas.filter(a => a.polys.length)
+      .map(a => ({ a, d: distToArea(a, pt.lat, pt.lng), c: distM(pt.lat, pt.lng, a.label[1], a.label[0]) }))
+      .sort((p, r) => p.d - r.d || p.c - r.c);
+    // 前の選択と調整をやめて、近い順に足す
+    hideCircle(); selected.clear(); X.clear();
+    const picked = []; let sum = 0;
+    for (const x of cand) { if (sum >= target) break; picked.push(x); sum += x.a.copies; }
+    picked.forEach(x => selected.add(x.a.key));
+    const far = picked[picked.length - 1];
+    const over = sum - target;
+    if (sum >= target && over > 0) X.set(far.a.key, over);
+    repaintAll(); update();
+    map.showHome(pt.lat, pt.lng, pt.title);
+    map.fitZones(picked.map(x => zones[x.a.key]).filter(Boolean), [pt.lat, pt.lng]);
+    const farName = window.HaifuLabel.tableLabel(far.a);
+    const km = d => (d / 1000).toFixed(1) + 'km';
+    let t = `「${pt.title}」から近い順に ${picked.length}区画を選びました${far.d > 0 ? `（いちばん遠い区画まで約${km(far.d)}）` : `（住所のある区画だけ）`}。`;
+    if (sum < target) t += `${AREA.title}をぜんぶ選んでも ${fmt(sum)}部で、${fmt(target)}部に届きません。`;
+    else if (over > 0) t += `いちばん遠い ${farName} で ${fmt(over)}部減らして、合計 ${fmt(target)}部にしました。`;
+    else t += `ちょうど ${fmt(target)}部です。`;
+    if (cand[0] && cand[0].d > 1500) t += `※この住所は${AREA.title}の区画から約${km(cand[0].d)}離れています。エリアの選び間違いがないか確認してください。`;
+    msg.textContent = t;
   }
 
   // ---- 住所で地図を移動（国土地理院の住所検索） ----
@@ -392,6 +457,8 @@
     $('circleAdd').addEventListener('click', addCircle);
     $('circleClear').addEventListener('click', hideCircle);
     $('addrForm').addEventListener('submit', e => { e.preventDefault(); searchAddress($('addrInput').value); });
+    $('omForm').addEventListener('submit', e => { e.preventDefault(); omakase(); });
+    $('omCopies').addEventListener('blur', e => { const v = +e.target.value.replace(/[^0-9]/g, ''); e.target.value = v ? fmt(v) : ''; });
     $('copyBtn').addEventListener('click', () => {
       const t = summaryText();
       if (!t) { flash('区画がまだ選ばれていません。'); return; }

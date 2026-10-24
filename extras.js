@@ -85,6 +85,8 @@
       render,
       bind,
       clear() { const s = st(); s.key = ''; s.amount = 0; },
+      // おまかせ選択から: 区画 key で amount 部減らす
+      set(key, amount) { const s = st(); s.key = key; s.amount = amount; },
       // URL: adj=w5:123（区画のURL記号:減らす部数）
       writeHash(p, adj) {
         if (adj.area && adj.amount) p.set('adj', adj.area.url + ':' + adj.amount);

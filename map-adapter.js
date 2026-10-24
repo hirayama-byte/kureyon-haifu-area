@@ -30,7 +30,8 @@
     map.on('zoomend', syncLabels);
 
     // 円選択のピンと円
-    let pin = null, circle = null;
+    let pin = null, circle = null, home = null;
+    const homeIcon = L.divIcon({ className: 'home-pin', html: '<span>★</span>', iconSize: [30, 30], iconAnchor: [15, 15] });
     const pinIcon = L.divIcon({ className: 'circle-pin', html: '<span></span>', iconSize: [28, 38], iconAnchor: [14, 36] });
 
     const zones = [];
@@ -83,9 +84,23 @@
       },
       setRadius(radiusM) { if (circle) { circle.setRadius(radiusM); if (!map.getBounds().contains(circle.getBounds())) map.fitBounds(circle.getBounds(), { padding: [20, 20] }); } },
       hideCircle() { if (pin) { pin.remove(); circle.remove(); pin = circle = null; } },
+      // おまかせ選択の基準の住所（動かせない目印）
+      showHome(lat, lng, title) {
+        if (home) home.setLatLng([lat, lng]); else home = L.marker([lat, lng], { icon: homeIcon, zIndexOffset: 1100, keyboard: false }).addTo(map);
+        home.bindTooltip(title || '', { direction: 'top', offset: [0, -16] });
+      },
+      hideHome() { if (home) { home.remove(); home = null; } },
+      // 区画（addZone の戻り値）がぜんぶ見えるように合わせる
+      fitZones(hs, extra) {
+        if (!hs.length) return;
+        const b = L.latLngBounds(hs[0].bounds().getSouthWest(), hs[0].bounds().getNorthEast());
+        hs.forEach(h => b.extend(h.bounds())); if (extra) b.extend(extra);
+        map.fitBounds(b, { padding: [24, 24], animate: false }); // 動かしている途中でエリアを切り替えるとエラーになるので、アニメーションしない
+        syncLabels();
+      },
       setLabels(on) { labelsOn = on; syncLabels(); },
       resize() { map.invalidateSize(); },
-      destroy() { map.remove(); }
+      destroy() { map.stop(); map.off(); map.remove(); }
     };
   }
 
