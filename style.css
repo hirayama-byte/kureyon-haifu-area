@@ -320,3 +320,29 @@ tbody tr.selected { background: #FFEDD5; }
 /* 合計部数の右のリセット */
 .sum-sub .reset-btn { display: block; margin: 0 0 6px auto; border: 1px solid #FCA5A5; background: #fff; color: #B91C1C; border-radius: 999px; padding: 3px 14px; font-size: 12px; font-weight: 700; cursor: pointer; }
 .sum-sub .reset-btn:hover { background: #FEF2F2; }
+
+/* ---- 地図版（パソコン）: 見出しを1行に・左右の列を別々にスクロール ---- */
+.head-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; }
+.head-row .area-tabs { margin-top: 0; }
+.main-col { display: contents; } /* スマホ: 地図→合計→一覧 の並びはそのまま */
+@media (min-width: 961px) {
+  html:has(.layout-wide), html:has(.layout-wide) body { height: 100%; overflow: hidden; }
+  body:has(.layout-wide) { display: flex; flex-direction: column; }
+  body:has(.layout-wide) .site-header { flex: none; padding: 8px 0; }
+  body:has(.layout-wide) .site-header .wrap { max-width: none; }
+  body:has(.layout-wide) .site-header h1 { font-size: 19px; white-space: nowrap; }
+  body:has(.layout-wide) .area-tabs button { padding: 3px 14px; font-size: 14px; }
+  body:has(.layout-wide) .lead { display: none; }
+  .layout-wide { flex: 1; min-height: 0; grid-template-areas: "main side"; grid-template-rows: minmax(0, 1fr); padding-top: 12px; padding-bottom: 12px; }
+  /* 左の列: スクロールバーを画面の左はしに出す（direction で左右を入れかえ、中身は元にもどす） */
+  .layout-wide .main-col { grid-area: main; display: flex; flex-direction: column; gap: 20px; min-height: 0; height: 100%; overflow-y: auto; overscroll-behavior: contain; direction: rtl; padding-left: 6px; }
+  .layout-wide .main-col > * { direction: ltr; flex: none; }
+  .layout-wide .main-col .site-footer { padding: 4px 16px 8px; }
+  .layout-wide .side { height: 100%; max-height: none; }
+  .layout-wide .geo-map { height: calc(100vh - 210px); min-height: 460px; }
+  /* スクロールバーをいつも見えるように */
+  .layout-wide .main-col, .layout-wide .side { overflow-y: scroll; scrollbar-width: auto; }
+  .layout-wide .main-col::-webkit-scrollbar, .layout-wide .side::-webkit-scrollbar { width: 12px; }
+  .layout-wide .main-col::-webkit-scrollbar-thumb, .layout-wide .side::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 6px; border: 3px solid var(--bg); }
+  .layout-wide .main-col::-webkit-scrollbar-track, .layout-wide .side::-webkit-scrollbar-track { background: transparent; }
+}

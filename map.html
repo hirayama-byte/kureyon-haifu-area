@@ -16,14 +16,18 @@
 
 <header class="site-header">
   <div class="wrap">
+    <div class="head-row">
     <h1>情報誌くれよん 配布エリア選択シート</h1>
     <nav class="area-tabs" id="areaTabs" aria-label="エリアの切り替え"></nav>
+    </div>
     <p class="lead">地図の区画をタップすると、配布可能部数と配布料金を自動で計算します。住所で地図を動かしたり、ピンからの半径で選んだり、下の一覧から選んだりもできます。</p>
   </div>
 </header>
 
 <main class="wrap layout layout-wide">
 
+  <!-- 左の列: 地図と一覧（パソコンでは この列だけで上下に動く） -->
+  <div class="main-col">
   <!-- 地図 -->
   <section class="map-card" aria-label="配布エリアの地図">
     <div class="map-toolbar">
@@ -62,6 +66,18 @@
     <div class="geo-map" id="geoMap"></div>
     <div class="map-tip" id="mapTip" hidden></div>
   </section>
+
+  <!-- 一覧 -->
+  <section class="card list-card" aria-label="区画の一覧">
+    <div class="list-head">
+      <h2>区画一覧</h2>
+      <div class="bulk" id="bulk"></div>
+    </div>
+    <div class="tables" id="tables"></div>
+    <p class="source">部数データ：<span id="source"></span>　区画の形：配布マップと国勢調査の町丁目境界（e-Stat）をもとに作成。境目は実際と数十メートルずれることがあります。</p>
+  </section>
+  <footer class="site-footer">© 2026 株式会社ケイ・クリエイト　情報誌くれよん</footer>
+  </div>
 
   <!-- 集計・料金 -->
   <aside class="side">
@@ -128,15 +144,6 @@
     </section>
   </aside>
 
-  <!-- 一覧 -->
-  <section class="card list-card" aria-label="区画の一覧">
-    <div class="list-head">
-      <h2>区画一覧</h2>
-      <div class="bulk" id="bulk"></div>
-    </div>
-    <div class="tables" id="tables"></div>
-    <p class="source">部数データ：<span id="source"></span>　区画の形：配布マップと国勢調査の町丁目境界（e-Stat）をもとに作成。境目は実際と数十メートルずれることがあります。</p>
-  </section>
 
 </main>
 
@@ -177,7 +184,6 @@
     <button type="button" class="btn-primary" id="orderMake">PDFをダウンロード（2枚）</button>
   </div>
 </dialog>
-<footer class="site-footer">© 2026 株式会社ケイ・クリエイト　情報誌くれよん</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="data/ichinomiya-geo.js"></script>
