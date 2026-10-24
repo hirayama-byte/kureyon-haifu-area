@@ -180,9 +180,16 @@
     const cols = [];
     const totalRows = area.areas.length;
     const rowsMax = Math.max(30, Math.min(42, Math.ceil(totalRows / 5)));
-    for (const grp of area.groups) {
-      const list = area.areas.filter(a => a.group === grp.id);
-      for (let i = 0; i < list.length; i += rowsMax) cols.push({ grp, list: list.slice(i, i + rowsMax) });
+    // 地域が少なければ地域ごとに1列。多いとき（一宮は15地域）は、地域をまたいで詰めて並べる（列が細くなって部数が切れないように）
+    const perGroup = area.groups.reduce((n, grp) => n + Math.ceil(area.areas.filter(a => a.group === grp.id).length / rowsMax), 0);
+    if (perGroup <= 6) {
+      for (const grp of area.groups) {
+        const list = area.areas.filter(a => a.group === grp.id);
+        for (let i = 0; i < list.length; i += rowsMax) cols.push({ grp, list: list.slice(i, i + rowsMax) });
+      }
+    } else {
+      const all = area.groups.flatMap(grp => area.areas.filter(a => a.group === grp.id));
+      for (let i = 0; i < all.length; i += rowsMax) cols.push({ grp: null, list: all.slice(i, i + rowsMax) });
     }
     const tableTop = T + 10 * MM;
     const sideW = 92 * MM;
@@ -225,7 +232,7 @@
         const label = window.HaifuLabel.tableLabel(a);
         const adjMark = x.adj && x.adj.url === a.url;
         xx = x0;
-        cell(xx, y, cw[0], rowH, label, { fill: tone[c.grp.tone] }); xx += cw[0];
+        cell(xx, y, cw[0], rowH, label, { fill: tone[(c.grp || area.groups.find(g => g.id === a.group)).tone] }); xx += cw[0];
         cell(xx, y, cw[1], rowH, fmt(a.copies), { align: 'right' }); xx += cw[1];
         cell(xx, y, cw[2], rowH, on ? '1' : '', { align: 'center', fill: '#DBEAFE', color: '#1D4ED8', bold: on }); xx += cw[2];
         cell(xx, y, cw[3], rowH, on ? fmt(q[a.key]) : '0', { align: 'right', fill: adjMark ? '#FDE047' : on ? '#FEF9C3' : '#FFF7ED', color: on ? '#C2410C' : '#2563EB', bold: on });

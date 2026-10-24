@@ -9,6 +9,7 @@
   function nameHasCode(a) {
     if (!a.name) return false;
     if (a.name === a.code || a.name.endsWith(a.code) || a.name.includes(' ' + a.code)) return true;
+    if (a.name.replace(/[・\s]/g, '') === a.code) return true; // 番号の代わりに地名が入っている区画（文京真清田 など）
     const n = /^\d+$/.test(a.code) ? +a.code : NaN;
     return n >= 10 && n <= 20 && a.name.includes(CIRCLED[n - 10]);
   }

@@ -364,7 +364,7 @@
     $('totalCopies').textContent = fmt(r.total);
     X.render(r.list, r.adj);
     $('adjNote').hidden = !r.adj.amount;
-    if (r.adj.amount) $('adjNote').textContent = `選択の合計 ${fmt(r.rawTotal)}部 − 調整 ${fmt(r.adj.amount)}部（${labelOf(r.adj.area)}：${fmt(r.adj.area.copies)}→${fmt(r.adj.area.copies - r.adj.amount)}部）`;
+    if (r.adj.amount) $('adjNote').textContent = `選択の合計 ${fmt(r.rawTotal)}部 − 調整 ${fmt(r.adj.amount)}部（${window.HaifuLabel.tableLabel(r.adj.area)}：${fmt(r.adj.area.copies)}→${fmt(r.adj.area.copies - r.adj.amount)}部）`;
     $('selCount').textContent = r.list.length;
     const groupTotals = AREA.groups.map(g => {
       const l = r.list.filter(a => a.group === g.id);
@@ -419,7 +419,7 @@
     return {
       savedAt: Date.now(), areaId: AREA.id, areaTitle: AREA.title, url: location.href,
       sel: r.list.map(a => a.url), size: r.size, fold: r.fold, ins: r.ins,
-      adj: r.adj.amount ? { url: r.adj.area.url, amount: r.adj.amount, copies: r.adj.area.copies, label: labelOf(r.adj.area) + (nameOf(r.adj.area) ? ' ' + nameOf(r.adj.area) : '') } : null,
+      adj: r.adj.amount ? { url: r.adj.area.url, amount: r.adj.amount, copies: r.adj.area.copies, label: window.HaifuLabel.tableLabel(r.adj.area) } : null,
       rawTotal: r.rawTotal, total: r.total, fee: r.fee, text: summaryText()
     };
   }
@@ -454,7 +454,7 @@
   // ---- 初期化 ----
   function init() {
     if (!AREAS.length) return;
-    X = window.HaifuExtras.create({ labelOf: a => labelOf(a) + (nameOf(a) ? ' ' + nameOf(a) : ''), onChange: update });
+    X = window.HaifuExtras.create({ labelOf: a => window.HaifuLabel.tableLabel(a), onChange: update });
     buildAreaTabs();
     $('areaTabs').hidden = AREAS.length < 2;
     setArea(readHash());
