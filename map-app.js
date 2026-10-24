@@ -458,6 +458,10 @@
     $('circleClear').addEventListener('click', hideCircle);
     $('addrForm').addEventListener('submit', e => { e.preventDefault(); searchAddress($('addrInput').value); });
     $('omForm').addEventListener('submit', e => { e.preventDefault(); omakase(); });
+    // 右の欄は、ページのどこにいても下の端まで画面に収まる高さにする（パソコンの画面だけ。中は右の欄だけで上下に動く）
+    const side = document.querySelector('.side');
+    const fitSide = () => { if (innerWidth < 961) { side.style.maxHeight = ''; return; } const top = Math.max(16, side.getBoundingClientRect().top); side.style.maxHeight = (innerHeight - top - 16) + 'px'; };
+    addEventListener('scroll', fitSide, { passive: true }); addEventListener('resize', fitSide); fitSide();
     $('omCopies').addEventListener('blur', e => { const v = +e.target.value.replace(/[^0-9]/g, ''); e.target.value = v ? fmt(v) : ''; });
     $('copyBtn').addEventListener('click', () => {
       const t = summaryText();
