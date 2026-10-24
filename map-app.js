@@ -124,7 +124,7 @@
   function showCircle(lat, lng) {
     circle = { lat, lng };
     map.showCircle(lat, lng, +$('radius').value, ([la, ln]) => { circle = { lat: la, lng: ln }; updateCircle(); });
-    ['circleAdd', 'circleClear'].forEach(id => { $(id).hidden = false; });
+    ['circleAdd', 'circleClear', 'circleCopies', 'circleOmakase'].forEach(id => { $(id).hidden = false; });
     $('circleShow').textContent = 'ピンを地図の中心に移動';
     updateCircle();
   }
@@ -132,7 +132,7 @@
     circle = null; circleHits = [];
     if (map) map.hideCircle();
     if (AREA) AREA.areas.forEach(a => zones[a.key] && zones[a.key].setPreview(false));
-    ['circleAdd', 'circleClear', 'circleInfo'].forEach(id => { $(id).hidden = true; });
+    ['circleAdd', 'circleClear', 'circleInfo', 'circleCopies', 'circleOmakase', 'circleMsg'].forEach(id => { $(id).hidden = true; });
     $('circleShow').textContent = '地図の中心にピンを置く';
   }
   function addCircle() {
@@ -181,11 +181,21 @@
     let pt;
     try { pt = await geocode(q); } catch (e) { msg.textContent = '住所の検索ができませんでした。時間をおいて試してください。'; return; }
     if (!pt) { msg.textContent = `「${q}」が見つかりませんでした。町名や番地を見直してください。`; return; }
+    hideCircle();
+    const r = pickNearest(pt.lat, pt.lng, target);
+    map.showHome(pt.lat, pt.lng, pt.title);
+    map.fitZones(r.picked.map(x => zones[x.a.key]).filter(Boolean), [pt.lat, pt.lng]);
+    let t = `「${pt.title}」から近い順に` + r.text;
+    if (r.nearest > 1500) t += `※この住所は${AREA.title}の区画から約${km(r.nearest)}離れています。エリアの選び間違いがないか確認してください。`;
+    msg.textContent = t;
+  }
+  const km = d => (d / 1000).toFixed(1) + 'km';
+  // 基準点から近い区画を順に足し、target 部を超えたら、いちばん遠い区画で超えた分を減らす（前の選択と調整は消す）
+  function pickNearest(lat, lng, target) {
     const cand = AREA.areas.filter(a => a.polys.length)
-      .map(a => ({ a, d: distToArea(a, pt.lat, pt.lng), c: distM(pt.lat, pt.lng, a.label[1], a.label[0]) }))
+      .map(a => ({ a, d: distToArea(a, lat, lng), c: distM(lat, lng, a.label[1], a.label[0]) }))
       .sort((p, r) => p.d - r.d || p.c - r.c);
-    // 前の選択と調整をやめて、近い順に足す
-    hideCircle(); selected.clear(); X.clear();
+    selected.clear(); X.clear();
     const picked = []; let sum = 0;
     for (const x of cand) { if (sum >= target) break; picked.push(x); sum += x.a.copies; }
     picked.forEach(x => selected.add(x.a.key));
@@ -193,16 +203,22 @@
     const over = sum - target;
     if (sum >= target && over > 0) X.set(far.a.key, over);
     repaintAll(); update();
-    map.showHome(pt.lat, pt.lng, pt.title);
-    map.fitZones(picked.map(x => zones[x.a.key]).filter(Boolean), [pt.lat, pt.lng]);
     const farName = window.HaifuLabel.tableLabel(far.a);
-    const km = d => (d / 1000).toFixed(1) + 'km';
-    let t = `「${pt.title}」から近い順に ${picked.length}区画を選びました${far.d > 0 ? `（いちばん遠い区画まで約${km(far.d)}）` : `（住所のある区画だけ）`}。`;
-    if (sum < target) t += `${AREA.title}をぜんぶ選んでも ${fmt(sum)}部で、${fmt(target)}部に届きません。`;
-    else if (over > 0) t += `いちばん遠い ${farName} で ${fmt(over)}部減らして、合計 ${fmt(target)}部にしました。`;
-    else t += `ちょうど ${fmt(target)}部です。`;
-    if (cand[0] && cand[0].d > 1500) t += `※この住所は${AREA.title}の区画から約${km(cand[0].d)}離れています。エリアの選び間違いがないか確認してください。`;
-    msg.textContent = t;
+    let text = ` ${picked.length}区画を選びました${far.d > 0 ? `（いちばん遠い区画まで約${km(far.d)}）` : `（基準の位置がある区画だけ）`}。`;
+    if (sum < target) text += `${AREA.title}をぜんぶ選んでも ${fmt(sum)}部で、${fmt(target)}部に届きません。`;
+    else if (over > 0) text += `いちばん遠い ${farName} で ${fmt(over)}部減らして、合計 ${fmt(target)}部にしました。`;
+    else text += `ちょうど ${fmt(target)}部です。`;
+    return { picked, text, nearest: cand[0] ? cand[0].d : 0 };
+  }
+  // 円で選ぶ: ピンの位置から、指定の部数でおまかせ（円の半径は目安。部数に合わせて円の外の区画も足し、多ければ減らす）
+  function circleOmakase() {
+    const msg = $('circleMsg'); msg.hidden = false;
+    const target = +$('circleCopies').value.replace(/[^0-9]/g, '');
+    if (!circle) { msg.textContent = '先に「地図の中心にピンを置く」でピンを置いてください。'; return; }
+    if (!target) { msg.textContent = '部数を入れてください。'; return; }
+    const r = pickNearest(circle.lat, circle.lng, target);
+    updateCircle();
+    msg.textContent = 'ピンから近い順に' + r.text;
   }
 
   // ---- 住所で地図を移動（国土地理院の住所検索） ----
@@ -212,17 +228,11 @@
     if (!q) return;
     msg.hidden = false; msg.textContent = '検索しています…';
     try {
-      const res = await fetch('https://msearch.gsi.go.jp/address-search/AddressSearch?q=' + encodeURIComponent(q));
-      const all = await res.json();
-      // 配布エリアの範囲（少し広め）に入る結果を優先する。無ければ愛知県内の結果
-      const [w, s, e, n] = areaBounds();
-      const inArea = x => { const [lng, lat] = x.geometry.coordinates; return lng > w - 0.01 && lng < e + 0.01 && lat > s - 0.01 && lat < n + 0.01; };
-      const list = all.filter(inArea).concat(all.filter(x => !inArea(x) && /愛知県/.test(x.properties.title)));
-      if (!list.length) { msg.textContent = `「${q}」が配布エリアの近くに見つかりませんでした。`; return; }
-      const [lng, lat] = list[0].geometry.coordinates;
-      map.panTo(lat, lng, 16);
-      if (circle) showCircle(lat, lng);
-      msg.textContent = `「${list[0].properties.title}」に移動しました。`;
+      const pt = await geocode(q); // 配布エリアの近くの結果を優先・つながらなければ1回やり直す
+      if (!pt) { msg.textContent = `「${q}」が配布エリアの近くに見つかりませんでした。`; return; }
+      map.panTo(pt.lat, pt.lng, 16);
+      if (circle) showCircle(pt.lat, pt.lng);
+      msg.textContent = `「${pt.title}」に移動しました。`;
       setTimeout(() => { msg.hidden = true; }, 3000);
     } catch (e) {
       msg.textContent = '住所の検索ができませんでした。時間をおいて試してください。';
@@ -456,6 +466,9 @@
     $('radius').addEventListener('change', () => { if (circle) { map.setRadius(+$('radius').value); updateCircle(); } else { const [lat, lng] = map.center(); showCircle(lat, lng); } });
     $('circleAdd').addEventListener('click', addCircle);
     $('circleClear').addEventListener('click', hideCircle);
+    $('circleOmakase').addEventListener('click', circleOmakase);
+    $('circleCopies').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); circleOmakase(); } });
+    $('circleCopies').addEventListener('blur', e => { const v = +e.target.value.replace(/[^0-9]/g, ''); e.target.value = v ? fmt(v) : ''; });
     $('addrForm').addEventListener('submit', e => { e.preventDefault(); searchAddress($('addrInput').value); });
     $('omForm').addEventListener('submit', e => { e.preventDefault(); omakase(); });
     // 右の欄は、ページのどこにいても下の端まで画面に収まる高さにする（パソコンの画面だけ。中は右の欄だけで上下に動く）

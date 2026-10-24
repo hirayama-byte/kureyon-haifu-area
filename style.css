@@ -310,3 +310,9 @@ tbody tr.selected { background: #FFEDD5; }
 .om-help { flex-basis: 100%; color: var(--muted); font-size: 11px; }
 .om-msg { flex-basis: 100%; margin: 0; color: #7C2D12; font-weight: 700; }
 .home-pin span { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background: #DC2626; color: #fff; font-size: 17px; border: 3px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.4); box-sizing: border-box; }
+
+/* 円で選ぶ: 部数でおまかせ */
+#circleCopies { width: 120px; padding: 4px 8px; border: 1px solid #99F6E4; border-radius: 8px; background: #fff; font-size: 13px; text-align: right; }
+.circle-bar .circle-omakase { background: var(--orange); border-color: var(--orange); color: #fff; }
+.circle-bar .circle-omakase:hover { background: var(--orange-dark); }
+.circle-msg { flex-basis: 100%; margin: 0; color: #7C2D12; font-weight: 700; }
