@@ -108,7 +108,7 @@
     $('oReq').value = x.adj ? `※${x.adj.label}で部数調整（−${fmt(x.adj.amount)}部）をお願いします` : '';
     $('oStaff').value = localGet('haifu-staff-name') || '';
     $('oUnit').value = staff.cost.base;
-    $('oFoldUnit').value = staff.cost.fold; $('oFoldRow').hidden = !x.fold;
+    $('oFoldUnit').value = x.size === 'A2' && staff.cost.foldA2 != null ? staff.cost.foldA2 : staff.cost.fold; $('oFoldRow').hidden = !x.fold; // A2の折加工は売値と同じく高い単価
     $('oInsUnit').value = staff.cost.insert; $('oInsRow').hidden = !x.ins;
   }
   async function tryUnlock() {
