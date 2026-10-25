@@ -358,7 +358,15 @@
       b.textContent = `${g.title}をすべて${allOn ? '解除' : '選択'}`; b.classList.toggle('bulk-on', allOn);
     });
   }
+  // A4は折加工の料金が0円なので、折加工は「不要」に固定して選べないようにする（欄は表示したまま）
+  function syncFold() {
+    const a4 = $('size').value === 'A4', f = $('fold');
+    if (a4) f.value = '0';
+    f.disabled = a4;
+    f.title = a4 ? 'A4は折加工なし（B4・A3・B3・A2で選べます）' : '';
+  }
   function update() {
+    syncFold();
     refreshBulk();
     const r = calc();
     $('totalCopies').textContent = fmt(r.total);
