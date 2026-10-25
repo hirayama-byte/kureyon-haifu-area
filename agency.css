@@ -1,0 +1,85 @@
+/* 代理店用（map2.html）: ダークの背景で、ひと目で代理店用とわかるようにする。style.css の上から重ねる */
+html.agency {
+  --ink: #E5E7EB;
+  --muted: #9CA3AF;
+  --line: #374151;
+  --bg: #0B1220;
+  --card: #111827;
+  --teal: #2DD4BF;
+  color-scheme: dark;
+}
+html.agency body { background: var(--bg); color: var(--ink); }
+
+/* 見出し */
+.agency .site-header { background: #030712; border-bottom-color: #1F2937; }
+.agency .site-header h1 { color: #F9FAFB; }
+.agency-badge { display: inline-block; margin-left: 8px; padding: 1px 10px; border-radius: 999px; background: #F59E0B; color: #111827; font-size: 13px; font-weight: 900; vertical-align: middle; letter-spacing: .05em; }
+.agency .area-tabs button { background: #1F2937; border-color: #374151; color: #E5E7EB; }
+.agency .area-tabs button:hover { background: #374151; }
+.agency .area-tabs button[aria-pressed="true"] { background: #F59E0B; border-color: #F59E0B; color: #111827; }
+.agency .guide-btn { background: #042F2E; border-color: #2DD4BF; color: #5EEAD4; }
+.agency .guide-btn:hover { background: #134E4A; }
+
+/* カード・入力 */
+.agency .card, .agency .map-card { background: var(--card); border-color: var(--line); box-shadow: none; }
+.agency select, .agency input[type="text"], .agency input[type="search"], .agency textarea,
+.agency .price-grid select, .agency .adjust-row select, .agency .circle-radius select, .agency .om-bar input, .agency #circleCopies, .agency .order-grid input, .agency .order-grid select, .agency .order-pass input {
+  background: #0F172A; color: #F3F4F6; border-color: #4B5563;
+}
+.agency input::placeholder { color: #6B7280; }
+.agency .adjust-row select:disabled, .agency .adjust-qty input:disabled, .agency #fold:disabled { background: #1F2937; color: #6B7280; }
+.agency .adjust { background: #0F172A; border-color: #374151; }
+.agency .adjust-round, .agency .adjust-round:disabled { background: #111827; }
+.agency .adjust-round:hover { background: #134E4A; }
+.agency .fee { background: #1C1917; border: 1px solid #F59E0B55; }
+.agency .btn-ghost { background: transparent; }
+.agency .btn-ghost:hover { background: #134E4A; }
+.agency .sum-sub .reset-btn { background: transparent; border-color: #F87171; color: #FCA5A5; }
+.agency .sum-sub .reset-btn:hover { background: #450A0A; }
+.agency .adj-note, .agency .adjust-msg { color: #FBBF24; }
+
+/* 地図まわりのバー */
+.agency .addr-search input { background: #0F172A; color: #F3F4F6; }
+.agency .circle-bar { background: #042F2E; }
+.agency .circle-title, .agency .circle-info { color: #5EEAD4; }
+.agency .circle-bar button { background: #0F172A; border-color: #2DD4BF; color: #5EEAD4; }
+.agency .circle-bar button:hover { background: #134E4A; }
+.agency .circle-bar .circle-add { background: #0D9488; color: #fff; }
+.agency .circle-bar .circle-add:disabled { background: #111827; color: #6B7280; border-color: #374151; }
+.agency .circle-bar .circle-clear { border-color: #4B5563; color: var(--muted); }
+.agency .om-bar { background: #1C1917; }
+.agency .om-msg, .agency .circle-msg { color: #FDBA74; }
+.agency .addr-msg { background: #042F2E; color: #5EEAD4; }
+/* 地図は明るいまま（道や地名が読めるように）。少しだけ暗くしてなじませる */
+.agency .geo-map .leaflet-tile-pane { filter: brightness(.88) saturate(.9); }
+
+/* 一覧 */
+.agency .bulk button { background: #1F2937; border-color: #374151; color: #E5E7EB; }
+.agency .bulk button:hover { background: #374151; }
+.agency #bulk button.bulk-on { background: #431407; border-color: #F97316; color: #FDBA74; }
+.agency .bulk .danger { color: #FCA5A5; }
+.agency tbody tr:hover { background: #1F2937; }
+.agency tbody tr.selected { background: #431407; }
+.agency .ward td, .agency .ward th { border-color: #1F2937; }
+.agency .no-map { background: #1F2937; color: #9CA3AF; }
+
+/* 保存した選択 */
+.agency .saved-list li { background: #0F172A; border-color: #374151; }
+.agency .saved-memo { color: #F3F4F6; border-bottom-color: #4B5563; }
+.agency .saved-btns button { background: #1F2937; border-color: #374151; color: #E5E7EB; }
+.agency .saved-bulk button { background: transparent; }
+.agency .saved-list li.saved-empty { background: transparent; }
+
+/* ダイアログ（使い方ガイド） */
+.agency .guide-dlg, .agency .order-dlg { background: #111827; color: #E5E7EB; }
+.agency .g-toc { background: #0B1220; }
+.agency .g-toc button { color: #E5E7EB; }
+.agency .g-toc button:hover { background: #1F2937; }
+.agency .g-tip { background: #1C1917; }
+.agency .g-faq dd { color: #D1D5DB; }
+
+/* スマホの下の合計帯 */
+.agency .sticky-total { background: #030712; border-top: 2px solid #F59E0B; }
+
+/* スクロールバー */
+.agency .main-col::-webkit-scrollbar-thumb, .agency .side::-webkit-scrollbar-thumb { background: #4B5563; border-color: var(--bg); }

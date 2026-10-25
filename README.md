@@ -16,6 +16,7 @@
 - `index.html` … 最初のURL。地図版（map.html）へ移る（共有URLの #sel=… も引き継ぐ）
 - `haifu-map.html` / `style.css` / `app.js` … 配布マップ版の画面（エリアの数に関係なく動く。リンクはしていない）
 - `price.js` … 料金の計算（配布マップ版と地図版で共通）
+- `map2.html` … **代理店用**（https://hirayama-byte.github.io/kureyon-haifu-area/map2.html）。売値のサイズ単価に1.0円上乗せ（price.js の AGENCY_PLUS）、ダークの背景（agency.css）、見出しに「代理店用」、保存は社内用と別、申込書DLなし。**map.html を直したら `node make-map2.js` で作り直す**
 - `guide.js` … 右上の「使い方ガイド」（目次つきの説明と「この場所を見る」で画面の場所を光らせる）。説明を直すときは SECTIONS を書き換える
 - `label.js` … 区画の呼び名。地名に番号が入っていれば（北方1・木曽川⑩ など）地図にも地名を出す。なければ番号
 - `extras.js` … 部数の調整（配布マップ版と地図版で共通）

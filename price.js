@@ -9,6 +9,8 @@
     B3: [8, 7.5, 7, 6],
     A2: [8, 7.5, 7, 6]
   };
+  // 代理店用のページ（map2.html）では、売値のサイズ単価に 1.0円を上乗せする
+  const AGENCY_PLUS = window.HAIFU_AGENCY ? 1 : 0;
   const tierOf = n => (n < 5000 ? 0 : n < 10000 ? 1 : n < 30000 ? 2 : 3);
   // 折加工（1部あたり・サイズで変わる）: A4 0円 / B4・A3 2円 / B3・A2 4円（2026-10-25 オーナー指示）
   const FOLD_PRICE = { A4: 0, B4: 2, A3: 2, B3: 4, A2: 4 };
@@ -16,7 +18,7 @@
   const insertPrice = on => (on ? 2 : 0);                            // 挟み込み：+2円
 
   function calcFee(total, size, fold, ins) {
-    const unitSize = SIZE_PRICE[size][tierOf(total)];
+    const unitSize = SIZE_PRICE[size][tierOf(total)] + AGENCY_PLUS;
     const unitFold = foldPrice(size, fold);
     const unitIns = insertPrice(ins);
     const unit = unitSize + unitFold + unitIns;
@@ -25,6 +27,7 @@
 
   window.HaifuPrice = {
     SIZE_PRICE,
+    AGENCY_PLUS,
     FOLD_PRICE,
     calcFee,
     fmt: n => n.toLocaleString('ja-JP'),

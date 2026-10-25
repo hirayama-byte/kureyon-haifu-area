@@ -5,7 +5,7 @@
   'use strict';
   const { fmt, fmtUnit, calcFee } = window.HaifuPrice;
   const $ = id => document.getElementById(id);
-  const KEY = 'haifu-saved-v1';
+  const KEY = window.HAIFU_AGENCY ? 'haifu-saved-agency-v1' : 'haifu-saved-v1'; // 代理店用は別の保存場所
   const MAX = 18;
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -43,7 +43,7 @@
         </div>
         <div class="saved-btns">
           <button type="button" data-act="open" title="この内容を地図に戻す">開く</button>
-          <button type="button" data-act="pdf" class="saved-pdf">申込書DL</button>
+          ${window.HAIFU_AGENCY ? '' : '<button type="button" data-act="pdf" class="saved-pdf">申込書DL</button>'}
           <button type="button" data-act="del" class="saved-del" aria-label="削除">×</button>
         </div>
       </li>`;

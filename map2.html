@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<!-- 自動で作ったファイル（make-map2.js）。直すときは map.html を直して node make-map2.js -->
+<html lang="ja" class="agency">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>情報誌くれよん 配布エリア選択シート（代理店用）</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23F97316'/%3E%3Cpath d='M9 22V10l7 5 7-5v12' fill='none' stroke='white' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="agency.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="head-row">
+    <h1>情報誌くれよん 配布エリア選択シート<span class="agency-badge">代理店用</span></h1>
+    <nav class="area-tabs" id="areaTabs" aria-label="エリアの切り替え"></nav>
+    <button type="button" class="guide-btn" id="guideBtn">📘 使い方ガイド</button>
+    </div>
+    <p class="lead">地図の区画をタップすると、配布可能部数と配布料金を自動で計算します。住所で地図を動かしたり、ピンからの半径で選んだり、下の一覧から選んだりもできます。</p>
+  </div>
+</header>
+
+<main class="wrap layout layout-wide">
+
+  <!-- 左の列: 地図と一覧（パソコンでは この列だけで上下に動く） -->
+  <div class="main-col">
+  <!-- 地図 -->
+  <section class="map-card" aria-label="配布エリアの地図">
+    <div class="map-toolbar">
+      <form class="addr-search" id="addrForm" role="search">
+        <input type="search" id="addrInput" placeholder="住所・町名で地図を移動（例：比良、国府宮）" aria-label="住所・町名">
+        <button type="submit">移動</button>
+      </form>
+      <div class="legend" id="legend"></div>
+      <label class="label-toggle"><input type="checkbox" id="showLabels" checked> 番号を表示</label>
+    </div>
+    <div class="circle-bar" id="circleBar">
+      <span class="circle-title">円で選ぶ</span>
+      <label class="circle-radius">半径
+        <select id="radius" aria-label="円の半径">
+          <option value="500">0.5km</option><option value="1000" selected>1km</option><option value="1500">1.5km</option>
+          <option value="2000">2km</option><option value="3000">3km</option><option value="5000">5km</option>
+        </select>
+      </label>
+      <button type="button" id="circleShow">地図の中心にピンを置く</button>
+      <span class="circle-info" id="circleInfo" hidden></span>
+      <button type="button" class="circle-add" id="circleAdd" hidden>この円の区画を追加</button>
+      <button type="button" class="circle-clear" id="circleClear" hidden>円を消す</button>
+      <input type="text" id="circleCopies" inputmode="numeric" placeholder="部数（例：10000）" aria-label="ピンからおまかせで選ぶ部数" hidden>
+      <button type="button" class="circle-omakase" id="circleOmakase" hidden>この部数でおまかせ</button>
+      <p class="circle-msg" id="circleMsg" hidden></p>
+    </div>
+    <form class="om-bar" id="omForm">
+      <span class="om-title">おまかせ選択</span>
+      <input type="search" id="omAddr" placeholder="住所（例：一宮市木曽川町里小牧寺東125）" aria-label="基準の住所">
+      <input type="text" id="omCopies" inputmode="numeric" placeholder="部数（例：20000）" aria-label="部数">
+      <button type="submit">おまかせ</button>
+      <span class="om-help">住所から近い区画を選び、いちばん遠い区画で端数を調整して、ちょうどの部数にします</span>
+      <p class="om-msg" id="omMsg" hidden></p>
+    </form>
+    <p class="addr-msg" id="addrMsg" hidden></p>
+    <div class="geo-map" id="geoMap"></div>
+    <div class="map-tip" id="mapTip" hidden></div>
+  </section>
+
+  <!-- 一覧 -->
+  <section class="card list-card" aria-label="区画の一覧">
+    <div class="list-head">
+      <h2>区画一覧</h2>
+      <div class="bulk" id="bulk"></div>
+    </div>
+    <div class="tables" id="tables"></div>
+    <p class="source">部数データ：<span id="source"></span>　区画の形：配布マップと国勢調査の町丁目境界（e-Stat）をもとに作成。境目は実際と数十メートルずれることがあります。</p>
+  </section>
+  <footer class="site-footer">© 2026 株式会社ケイ・クリエイト　情報誌くれよん</footer>
+  </div>
+
+  <!-- 集計・料金 -->
+  <aside class="side">
+    <section class="card summary" aria-live="polite">
+      <div class="sum-row">
+        <div>
+          <p class="sum-label">合計部数</p>
+          <p class="sum-big"><span id="totalCopies">0</span><small>部</small></p>
+          <p class="adj-note" id="adjNote" hidden></p>
+        </div>
+        <div class="sum-sub">
+          <button type="button" class="reset-btn" id="resetAll" title="選んだ区画・部数の調整・ピンを消し、チラシサイズ・折加工・挟み込みを最初の設定（A4・不要）に戻します">リセット</button>
+          <p><span id="selCount">0</span> 区画を選択中</p>
+          <p class="ward-sub" id="wardSub"></p>
+        </div>
+      </div>
+
+      <div class="price">
+        <h2>配布料金の計算</h2>
+        <div class="price-grid">
+          <label>チラシサイズ
+            <select id="size">
+              <option>A4</option><option>B4</option><option>A3</option><option>B3</option><option>A2</option>
+            </select>
+          </label>
+          <label>折加工
+            <select id="fold"><option value="0">不要</option><option value="1">必要</option></select>
+          </label>
+          <label>挟み込み配布
+            <select id="insert"><option value="0">不要</option><option value="1">必要</option></select>
+          </label>
+        </div>
+        <div class="adjust">
+          <p class="adjust-title">部数の調整（端数合わせ）</p>
+          <div class="adjust-row">
+            <select id="adjArea" aria-label="部数を減らす区画"><option value="">区画を選ぶ</option></select>
+            <span class="adjust-qty">－<input type="text" id="adjQty" inputmode="numeric" pattern="[0-9]*" placeholder="0" aria-label="減らす部数">部</span>
+          </div>
+          <button type="button" class="adjust-round" id="adjRound">千部単位にそろえる</button>
+          <p class="adjust-msg" id="adjMsg" hidden></p>
+        </div>
+        <dl class="price-lines">
+          <div><dt>サイズ単価</dt><dd><span id="unitSize">7.0</span>円</dd></div>
+          <div id="foldLine" hidden><dt>折加工</dt><dd>＋<span id="unitFold">0</span>円</dd></div>
+          <div id="insertLine" hidden><dt>挟み込み</dt><dd>＋<span id="unitInsert">0</span>円</dd></div>
+          <div class="unit-total"><dt>1部あたり</dt><dd><span id="unitTotal">7.0</span>円</dd></div>
+        </dl>
+        <p class="fee">配布料金（税別）<strong><span id="fee">0</span>円</strong></p>
+        <p class="note">単価は合計部数で変わります（5,000部未満／1万部未満／3万部未満／3万部以上）。</p>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn-primary" id="copyBtn">選択内容をコピー</button>
+        <button type="button" class="btn-ghost" id="shareBtn">このURLを共有</button>
+      </div>
+      <p class="copied" id="copied" hidden></p>
+    </section>
+    <section class="card saved" aria-label="保存した選択">
+      <div class="saved-head"><h2>保存した選択</h2><span class="saved-count" id="savedCount">0/18</span></div>
+      <p class="saved-help">「選択内容をコピー」で保存（このパソコンのこのブラウザだけ・18件まで。古いものから消えます）</p>
+      <div class="saved-bulk" id="savedBulk" hidden><label><input type="checkbox" id="savedAll"> すべて選ぶ</label><button type="button" id="savedDelChecked" disabled>選んだものを削除</button></div>
+      <ul class="saved-list" id="savedList"></ul>
+      <p class="copied" id="savedMsg" hidden></p>
+    </section>
+  </aside>
+
+
+</main>
+
+<div class="sticky-total" id="stickyTotal">
+  <span><b id="stickyCopies">0</b>部</span>
+  <span class="sep">／</span>
+  <span>料金 <b id="stickyFee">0</b>円（税別）</span>
+</div>
+
+
+<!-- 申込書（スタッフ用） -->
+<dialog class="order-dlg" id="orderDlg" aria-labelledby="orderTitle">
+  <h2 id="orderTitle">配布会社向け申込書（PDF・A3 2枚）</h2>
+  <div id="orderLock">
+    <p>スタッフ用です。パスワードを入れてください。</p>
+    <div class="order-pass"><input type="password" id="orderPass" inputmode="numeric" autocomplete="off" aria-label="パスワード"><button type="button" id="orderUnlock">確認</button></div>
+  </div>
+  <div id="orderForm" hidden>
+    <div class="order-grid">
+      <label>配布会社<select id="oCompany"></select></label>
+      <label>申込日<input type="date" id="oDate"></label>
+      <label>配布エリア（版）<select id="oEdition"></select></label>
+      <label>担当者<input type="text" id="oStaff" placeholder="例：平山竜也"></label>
+      <label>配布期間（開始）<input type="date" id="oFrom"></label>
+      <label>配布期間（終了）<input type="date" id="oTo"></label>
+      <label class="wide">クライアント名<input type="text" id="oClient"></label>
+      <label class="wide">備考（納品）<input type="text" id="oNote"></label>
+      <label class="wide">依頼事項<input type="text" id="oReq"></label>
+      <label>単価（部数）<input type="number" step="0.1" id="oUnit"></label>
+      <label id="oFoldRow">単価（折り加工）<input type="number" step="0.1" id="oFoldUnit"></label>
+      <label id="oInsRow">単価（挟み込み）<input type="number" step="0.1" id="oInsUnit"></label>
+    </div>
+    <p class="order-note">1枚目：エリア別配布部数と注文書（A3横）／2枚目：選んだ区画の地図（A3）</p>
+  </div>
+  <p class="order-err" id="orderErr" hidden></p>
+  <div class="order-actions">
+    <button type="button" class="btn-ghost" id="orderClose">閉じる</button>
+    <button type="button" class="btn-primary" id="orderMake">PDFをダウンロード（2枚）</button>
+  </div>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="data/ichinomiya-geo.js"></script>
+<script src="data/inazawa-geo.js"></script>
+<script src="data/konan-geo.js"></script>
+<script src="data/kitanagoya-geo.js"></script>
+<script src="data/kiyosu-geo.js"></script>
+<script src="data/tsushima-geo.js"></script>
+<script src="data/seihoku-geo.js"></script>
+<script>window.HAIFU_AGENCY = true;</script>
+<script src="price.js"></script>
+<script src="label.js"></script>
+<script src="extras.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="data/staff.enc.js"></script>
+<script src="order.js"></script>
+<script src="guide.js"></script>
+<script src="map-adapter.js"></script>
+<script src="map-app.js"></script>
+</body>
+</html>
