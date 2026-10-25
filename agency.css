@@ -83,3 +83,4 @@ html.agency body { background: var(--bg); color: var(--ink); }
 
 /* スクロールバー */
 .agency .main-col::-webkit-scrollbar-thumb, .agency .side::-webkit-scrollbar-thumb { background: #4B5563; border-color: var(--bg); }
+.agency .update-date { color: #FBBF24; }

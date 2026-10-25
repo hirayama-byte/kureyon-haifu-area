@@ -348,7 +348,7 @@ tbody tr.selected { background: #FFEDD5; }
 }
 
 /* ---- 使い方ガイド ---- */
-.guide-btn { margin-left: auto; border: 1px solid var(--teal); background: #F0FDFA; color: var(--teal); border-radius: 999px; padding: 4px 14px; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.guide-btn { border: 1px solid var(--teal); background: #F0FDFA; color: var(--teal); border-radius: 999px; padding: 4px 14px; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; }
 .guide-btn:hover { background: #CCFBF1; }
 .guide-dlg { border: 0; border-radius: 16px; padding: 0; width: min(860px, calc(100vw - 24px)); max-height: min(640px, calc(100vh - 24px)); box-shadow: 0 20px 50px rgba(0,0,0,.3); color: var(--ink); }
 .guide-dlg[open] { display: flex; flex-direction: column; }
@@ -387,3 +387,7 @@ tbody tr.selected { background: #FFEDD5; }
 .legend { flex-wrap: wrap; row-gap: 2px; }
 .legend span { white-space: nowrap; }
 #fold:disabled { background: #F3F4F6; color: #9CA3AF; cursor: not-allowed; }
+
+/* 更新日（使い方ガイドの左） */
+.head-right { margin-left: auto; display: flex; align-items: center; gap: 10px; flex: none; }
+.update-date { font-size: 12px; font-weight: 700; color: var(--muted); white-space: nowrap; }
