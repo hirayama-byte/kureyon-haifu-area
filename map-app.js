@@ -475,9 +475,10 @@
     $('circleAdd').addEventListener('click', addCircle);
     $('circleClear').addEventListener('click', hideCircle);
     $('circleOmakase').addEventListener('click', circleOmakase);
-    // リセット: 選んだ区画・部数の調整・円とピン・住所の目印・おまかせの案内を消す（チラシサイズなどの設定はそのまま）
+    // リセット: 選んだ区画・部数の調整・円とピン・住所の目印・おまかせの案内を消し、チラシサイズは A4、折加工・挟み込みは「不要」に戻す
     $('resetAll').addEventListener('click', () => {
       selected.clear(); X.clear(); hideCircle(); map.hideHome();
+      $('size').value = 'A4'; $('fold').value = '0'; $('insert').value = '0';
       ['omMsg', 'circleMsg'].forEach(id => { $(id).hidden = true; });
       repaintAll(); update();
     });
