@@ -198,6 +198,7 @@
   }
   function repaintAll() { AREA.areas.forEach(a => paint(a.key)); }
 
+  let unitOverride = null; // 手動のサイズ単価（null なら自動）
   function calc() {
     const list = AREA.areas.filter(a => selected.has(a.key));
     const rawTotal = list.reduce((s, a) => s + a.copies, 0);
@@ -206,7 +207,22 @@
     const size = $('size').value;
     const fold = $('fold').value === '1';
     const ins = $('insert').value === '1';
-    return { list, rawTotal, adj, total, size, fold, ins, ...calcFee(total, size, fold, ins) };
+    return { list, rawTotal, adj, total, size, fold, ins, ...calcFee(total, size, fold, ins, unitOverride) };
+  }
+  // サイズ単価の欄: 自動の値を出しておき、書き換えたら手動の単価にする（自動と同じ値・空なら自動に戻る）
+  function readUnitInput() {
+    const v = parseFloat(String($('unitSize').value).replace(/[^0-9.]/g, ''));
+    unitOverride = Number.isFinite(v) && v >= 0 ? Math.round(v * 100) / 100 : null;
+    update();
+  }
+  function showUnit(r) {
+    const inp = $('unitSize');
+    if (document.activeElement !== inp) inp.value = fmtUnit(r.unitSize);
+    inp.classList.toggle('manual', !!r.manual);
+    $('unitBadge').hidden = !r.manual; $('unitAuto').hidden = !r.manual;
+    $('unitNote').hidden = !r.manual;
+    if (r.manual) $('unitNote').textContent = `サイズ単価は手動の ${fmtUnit(r.unitSize)}円で計算しています（合計部数からの自動は ${fmtUnit(r.autoSize)}円）。`;
+    if (!r.manual) unitOverride = null;
   }
 
   // 地域ごとのボタンの文字: ぜんぶ選ばれていれば「すべて解除」
@@ -247,7 +263,7 @@
       const n = r.list.filter(a => a.map === el.dataset.mapCount).length;
       el.textContent = n ? n : '';
     });
-    $('unitSize').textContent = fmtUnit(r.unitSize);
+    showUnit(r);
     $('unitFold').textContent = r.unitFold; $('foldLine').hidden = !r.fold;
     $('unitInsert').textContent = r.unitIns; $('insertLine').hidden = !r.ins;
     $('unitTotal').textContent = fmtUnit(r.unit);
@@ -270,12 +286,14 @@
     if (r.size !== 'A4') p.set('size', r.size);
     if (r.fold) p.set('fold', '1');
     if (r.ins) p.set('ins', '1');
+    if (r.manual) p.set('unit', String(r.unitSize));
     X.writeHash(p, r.adj);
     const h = p.toString();
     history.replaceState(null, '', h ? '#' + h : location.pathname + location.search);
   }
   function readHash() {
     const p = new URLSearchParams(location.hash.slice(1));
+    { const u = parseFloat(p.get('unit')); unitOverride = Number.isFinite(u) && u >= 0 ? u : null; }
     const area = AREAS.find(a => a.id === p.get('area')) || AREAS[0];
     const byUrl = Object.fromEntries(area.areas.map(a => [a.url, a.key]));
     const set = selectedBy[area.id] = new Set();
@@ -300,7 +318,7 @@
     if (r.adj.amount) lines.push(`調整：${labelOf(r.adj.area)} −${fmt(r.adj.amount)}部（${fmt(r.adj.area.copies)}→${fmt(r.adj.area.copies - r.adj.amount)}部）`);
     lines.push(`合計：${fmt(r.total)}部${r.adj.amount ? `（選択の合計 ${fmt(r.rawTotal)}部から調整）` : ''}`);
     const opts = [r.fold ? `折加工+${r.unitFold}円` : '', r.ins ? `挟み込み+${r.unitIns}円` : ''].filter(Boolean).join('・');
-    lines.push(`チラシ${r.size}　単価${fmtUnit(r.unitSize)}円${opts ? '（' + opts + '）' : ''}＝1部${fmtUnit(r.unit)}円`);
+    lines.push(`チラシ${r.size}　単価${fmtUnit(r.unitSize)}円${r.manual ? '（手動）' : ''}${opts ? '（' + opts + '）' : ''}＝1部${fmtUnit(r.unit)}円`);
     lines.push(`配布料金：${fmt(r.fee)}円（税別）`);
     return lines.join('\n');
   }

@@ -16,7 +16,7 @@
   // 今の選択を保存する（同じ内容が直前にあれば重ねない）
   function save(snap) {
     const list = load();
-    const sig = s => [s.areaId, s.sel.join(','), s.adj ? s.adj.url + ':' + s.adj.amount : '', s.size, s.fold, s.ins].join('|');
+    const sig = s => [s.areaId, s.sel.join(','), s.adj ? s.adj.url + ':' + s.adj.amount : '', s.size, s.fold, s.ins, s.manual ? s.unitSize : ''].join('|'); // 手動の単価も区別する
     if (list[0] && sig(list[0]) === sig(snap)) { list[0].savedAt = snap.savedAt; store(list); render(); return; }
     list.unshift({ ...snap, id: Date.now().toString(36), memo: '' });
     if (!store(list)) { alertMsg('このブラウザでは保存できませんでした（プライベートモードなど）。'); return; }
@@ -257,7 +257,7 @@
     cell(sx, yy, sw[0], rowH, '全エリア合計', { bold: true }); cell(sx + sw[0], yy, sw[1], rowH, fmt(sumAll), { align: 'right', color: '#1D4ED8' });
     cell(sx + sw[0] + sw[1], yy, sw[2], rowH, String(sumSel), { align: 'center', fill: '#FEF08A', bold: true }); cell(sx + sw[0] + sw[1] + sw[2], yy, sw[3], rowH, fmt(sumNow), { align: 'right', fill: '#FEF08A', bold: true });
     yy += rowH * 1.4;
-    const sale = calcFee(sumNow, x.size, x.fold, x.ins);
+    const sale = calcFee(sumNow, x.size, x.fold, x.ins, x.manual ? x.unitSize : undefined);
     const lines = [['チラシサイズ⇒', x.size, fmtUnit(sale.unitSize)], ['※折加工追加 ⇒', x.fold ? '必要' : '不要', fmtUnit(sale.unitFold)], ['※挟み込み配布⇒', x.ins ? '必要' : '不要', fmtUnit(sale.unitIns)]];
     cell(sx + sw[0], yy, sw[1], rowH, '選択', { fill: '#DBEAFE', align: 'center', size: rowH * 0.5 }); cell(sx + sw[0] + sw[1], yy, sw[2], rowH, '単価', { align: 'center', size: rowH * 0.5 });
     yy += rowH;

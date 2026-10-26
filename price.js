@@ -17,12 +17,15 @@
   const foldPrice = (size, on) => (on ? FOLD_PRICE[size] || 0 : 0);
   const insertPrice = on => (on ? 2 : 0);                            // 挟み込み：+2円
 
-  function calcFee(total, size, fold, ins) {
-    const unitSize = SIZE_PRICE[size][tierOf(total)] + AGENCY_PLUS;
+  // unitOverride: 手動で入れたサイズ単価（別のエリアとの合算で安い段階になるときなど）。無ければ合計部数から自動
+  function calcFee(total, size, fold, ins, unitOverride) {
+    const autoSize = SIZE_PRICE[size][tierOf(total)] + AGENCY_PLUS;
+    const manual = Number.isFinite(unitOverride) && unitOverride >= 0 && Math.abs(unitOverride - autoSize) > 1e-9;
+    const unitSize = manual ? unitOverride : autoSize;
     const unitFold = foldPrice(size, fold);
     const unitIns = insertPrice(ins);
     const unit = unitSize + unitFold + unitIns;
-    return { unitSize, unitFold, unitIns, unit, fee: Math.round(total * unit) };
+    return { unitSize, autoSize, manual, unitFold, unitIns, unit, fee: Math.round(total * unit) };
   }
 
   window.HaifuPrice = {

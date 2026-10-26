@@ -125,13 +125,14 @@
           <p class="adjust-msg" id="adjMsg" hidden></p>
         </div>
         <dl class="price-lines">
-          <div><dt>サイズ単価</dt><dd><span id="unitSize">7.0</span>円</dd></div>
+          <div class="unit-size-line"><dt>サイズ単価 <span class="unit-badge" id="unitBadge" hidden>手動</span></dt><dd><input type="text" inputmode="decimal" id="unitSize" class="unit-in" value="7.0" aria-label="サイズ単価（円）。自動で入ります。書き換えると手動の単価になります" title="自動で入ります。別のエリアとの合算で安い段階になるときなどは、ここを書き換えられます">円<button type="button" id="unitAuto" class="unit-auto" hidden title="合計部数から決まる自動の単価に戻す">自動に戻す</button></dd></div>
           <div id="foldLine" hidden><dt>折加工</dt><dd>＋<span id="unitFold">0</span>円</dd></div>
           <div id="insertLine" hidden><dt>挟み込み</dt><dd>＋<span id="unitInsert">0</span>円</dd></div>
           <div class="unit-total"><dt>1部あたり</dt><dd><span id="unitTotal">7.0</span>円</dd></div>
         </dl>
         <p class="fee">配布料金（税別）<strong><span id="fee">0</span>円</strong></p>
-        <p class="note">単価は合計部数で変わります（5,000部未満／1万部未満／3万部未満／3万部以上）。</p>
+        <p class="note">単価は合計部数で変わります（5,000部未満／1万部未満／3万部未満／3万部以上）。サイズ単価の欄は書き換えられます（別のエリアとの合算で安い段階になるときなど）。</p>
+        <p class="note unit-note" id="unitNote" hidden></p>
       </div>
 
       <div class="actions">

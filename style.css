@@ -391,3 +391,13 @@ tbody tr.selected { background: #FFEDD5; }
 /* 更新日（使い方ガイドの左） */
 .head-right { margin-left: auto; display: flex; align-items: center; gap: 10px; flex: none; }
 .update-date { font-size: 12px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+
+/* サイズ単価の欄（自動で入る。書き換えると手動） */
+.unit-in { width: 64px; padding: 3px 6px; border: 1px solid #D1D5DB; border-radius: 6px; background: #fff; color: var(--ink); font: inherit; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+.unit-in:focus { outline: 2px solid var(--orange); outline-offset: 1px; }
+.unit-in.manual { border-color: var(--orange); background: #FFF7ED; color: var(--orange-dark); }
+.unit-badge { display: inline-block; margin-left: 4px; padding: 0 6px; border-radius: 999px; background: var(--orange); color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; vertical-align: middle; }
+.unit-auto { margin-left: 6px; border: 1px solid var(--line); background: #fff; color: var(--muted); border-radius: 999px; padding: 1px 8px; font-size: 11px; cursor: pointer; }
+.unit-auto:hover { border-color: var(--orange); color: var(--orange-dark); }
+.unit-size-line dd { display: flex; align-items: center; gap: 2px; }
+.unit-note { color: var(--orange-dark); }
