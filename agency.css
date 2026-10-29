@@ -82,5 +82,7 @@ html.agency body { background: var(--bg); color: var(--ink); }
 .agency .sticky-total { background: #030712; border-top: 2px solid #F59E0B; }
 
 /* スクロールバー */
-.agency .main-col::-webkit-scrollbar-thumb, .agency .side::-webkit-scrollbar-thumb { background: #4B5563; border-color: var(--bg); }
+.agency .main-col::-webkit-scrollbar-thumb, .agency .side::-webkit-scrollbar-thumb { background: #6B7280; border-color: #1F2937; }
+.agency .main-col::-webkit-scrollbar-thumb:hover, .agency .side::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+.agency .main-col::-webkit-scrollbar-track, .agency .side::-webkit-scrollbar-track { background: #1F2937; }
 .agency .update-date { color: #FBBF24; }

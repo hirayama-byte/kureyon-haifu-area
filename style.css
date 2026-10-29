@@ -236,7 +236,7 @@ tbody tr.selected { background: #FFEDD5; }
   .layout-wide { max-width: none; width: 100%; margin-left: 0; margin-right: 0; } /* .wrap の margin:auto が残ると flex の中で中身の幅に縮む（一宮以外が狭くなった原因） */
   .layout-wide .geo-map { height: calc(100vh - 150px); min-height: 520px; }
   /* 右の欄（合計・料金・保存した選択）は、左の地図・一覧とは別に上下に動かせる */
-  .layout-wide .side { max-height: calc(100vh - 32px); overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; scrollbar-width: thin; }
+  .layout-wide .side { max-height: calc(100vh - 32px); overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; }
   .layout-wide .side .saved-list { max-height: none; overflow-y: visible; }
 }
 
@@ -341,10 +341,14 @@ tbody tr.selected { background: #FFEDD5; }
   .layout-wide .side { height: 100%; max-height: none; }
   .layout-wide .geo-map { height: calc(100vh - 210px); min-height: 460px; }
   /* スクロールバーをいつも見えるように */
-  .layout-wide .main-col, .layout-wide .side { overflow-y: scroll; scrollbar-width: auto; }
-  .layout-wide .main-col::-webkit-scrollbar, .layout-wide .side::-webkit-scrollbar { width: 12px; }
-  .layout-wide .main-col::-webkit-scrollbar-thumb, .layout-wide .side::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 6px; border: 3px solid var(--bg); }
-  .layout-wide .main-col::-webkit-scrollbar-track, .layout-wide .side::-webkit-scrollbar-track { background: transparent; }
+  /* 注意: scrollbar-color / scrollbar-width を書くと Chrome では下の ::-webkit-scrollbar（太さ指定）が無効になるので書かない */
+  .layout-wide .main-col, .layout-wide .side { overflow-y: scroll; }
+  /* 左の列のスクロールバーは太く・つまみを濃く（細いと地図のドラッグと間違えやすい・2026-10-29） */
+  .layout-wide .main-col::-webkit-scrollbar { width: 20px; }
+  .layout-wide .side::-webkit-scrollbar { width: 14px; }
+  .layout-wide .main-col::-webkit-scrollbar-thumb, .layout-wide .side::-webkit-scrollbar-thumb { background: #94A3B8; border-radius: 10px; border: 4px solid #E2E8F0; min-height: 60px; }
+  .layout-wide .main-col::-webkit-scrollbar-thumb:hover, .layout-wide .side::-webkit-scrollbar-thumb:hover { background: #64748B; }
+  .layout-wide .main-col::-webkit-scrollbar-track, .layout-wide .side::-webkit-scrollbar-track { background: #E2E8F0; border-radius: 10px; }
 }
 
 /* ---- 使い方ガイド ---- */
