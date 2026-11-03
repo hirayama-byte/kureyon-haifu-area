@@ -118,7 +118,11 @@
   }
 
   // ---------------- PDF を作る ----------------
-  const MM = 200 / 25.4; // 200dpi
+  const PHONE = !!(window.matchMedia && matchMedia('(max-width: 700px)').matches);
+  const MM = (PHONE ? 150 : 200) / 25.4; // 200dpi（スマホは150dpi: 大きい画像でメモリが足りず落ちないように・2026-11-03）
+  const JSPDF_URL = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+  let jspdfLoading = null;
+  const loadJsPdf = () => window.jspdf ? Promise.resolve() : (jspdfLoading = jspdfLoading || new Promise((ok, ng) => { const sc = document.createElement('script'); sc.src = JSPDF_URL; sc.onload = ok; sc.onerror = () => { jspdfLoading = null; ng(new Error('PDFの部品を読み込めませんでした')); }; document.head.appendChild(sc); }));
   const A3 = { w: Math.round(420 * MM), h: Math.round(297 * MM) };
   const FONT = '"Noto Sans JP", "Yu Gothic", "Meiryo", sans-serif';
   const font = (px, w) => `${w || 400} ${px}px ${FONT}`;
@@ -139,6 +143,7 @@
     btn.disabled = true; btn.textContent = '作成中…（地図を読み込んでいます）';
     try {
       await document.fonts.load(font(20, 700)); await document.fonts.load(font(20));
+      await loadJsPdf(); // 申込書を作る人だけ読む（2026-11-03）
       const p1 = drawSheet(area, x, form);
       const p2 = await drawMap(area, x, form);
       const { jsPDF } = window.jspdf;
@@ -149,7 +154,8 @@
       pdf.addImage(p2.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, w, h);
       const d = form.date.replace(/-/g, '');
       pdf.save(`同時配布申込書_${area.title}_${form.client || 'クライアント未入力'}_${d}.pdf`);
-      $('orderDlg').close();
+      if (p2.failedTiles) { const er = $('orderErr'); er.hidden = false; er.textContent = `PDFはできましたが、地図の一部（${p2.failedTiles}枚）が読み込めず白くなっています。通信を確かめて、もう一度押すと作り直せます。`; }
+      else $('orderDlg').close();
     } catch (e) {
       const er = $('orderErr'); er.hidden = false; er.textContent = 'PDFを作れませんでした。通信状態を確かめて、もう一度押してください。（' + e.message + '）';
     } finally { btn.disabled = false; btn.textContent = 'PDFをダウンロード（2枚）'; }
@@ -330,6 +336,7 @@
     const jobs = [];
     for (let tx = tx0; tx <= tx1; tx++) for (let ty = ty0; ty <= ty1; ty++) jobs.push(loadImg(`https://cyberjapandata.gsi.go.jp/xyz/pale/${z}/${tx}/${ty}.png`).then(im => ({ im, tx, ty })));
     const tiles = await Promise.all(jobs);
+    cv.failedTiles = tiles.filter(t => !t.im).length; // 読み込めなかった地図の数（白抜けを知らせる）
     g.save(); g.beginPath(); g.rect(ox, oy, pxW * k, pxH * k); g.clip();
     for (const t of tiles) if (t.im) g.drawImage(t.im, ox + (t.tx * 256 - lon2x(w, z)) * k, oy + (t.ty * 256 - lat2y(n, z)) * k, 256 * k + 1, 256 * k + 1);
     // 区画

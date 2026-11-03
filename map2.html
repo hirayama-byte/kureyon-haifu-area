@@ -2,6 +2,7 @@
 <!-- 自動で作ったファイル（make-map2.js）。直すときは map.html を直して node make-map2.js -->
 <html lang="ja" class="agency">
 <head>
+<!-- 自前の css・js には ?v=日付 を付けている。直したら全部まとめて日付を上げる（新旧が混ざらないように・2026-11-03） -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
@@ -11,8 +12,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-<link rel="stylesheet" href="style.css?v=20261029">
-<link rel="stylesheet" href="agency.css">
+<link rel="stylesheet" href="style.css?v=20261103">
+<link rel="stylesheet" href="agency.css?v=20261103">
 </head>
 <body>
 
@@ -24,7 +25,7 @@
     <!-- 部数・区画を直したら、この日付も直す（代理店用 map2.html は node make-map2.js で作り直す） -->
     <div class="head-right">
     <span class="update-date" title="部数・区画のデータを更新した日">2026.10.26更新</span>
-    <button type="button" class="guide-btn" id="guideBtn">📘 使い方ガイド</button>
+    <button type="button" class="guide-btn" id="guideBtn" title="使い方ガイドを新しいタブで開く">使い方ガイド</button>
     </div>
     </div>
     <p class="lead">地図の区画をタップすると、配布可能部数と配布料金を自動で計算します。住所で地図を動かしたり、ピンからの半径で選んだり、下の一覧から選んだりもできます。</p>
@@ -194,22 +195,21 @@
 </dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="data/ichinomiya-geo.js"></script>
-<script src="data/inazawa-geo.js"></script>
-<script src="data/konan-geo.js"></script>
-<script src="data/kitanagoya-geo.js"></script>
-<script src="data/kiyosu-geo.js"></script>
-<script src="data/tsushima-geo.js"></script>
-<script src="data/seihoku-geo.js"></script>
+<script src="data/ichinomiya-geo.js?v=20261103"></script>
+<script src="data/inazawa-geo.js?v=20261103"></script>
+<script src="data/konan-geo.js?v=20261103"></script>
+<script src="data/kitanagoya-geo.js?v=20261103"></script>
+<script src="data/kiyosu-geo.js?v=20261103"></script>
+<script src="data/tsushima-geo.js?v=20261103"></script>
+<script src="data/seihoku-geo.js?v=20261103"></script>
 <script>window.HAIFU_AGENCY = true;</script>
-<script src="price.js"></script>
-<script src="label.js"></script>
-<script src="extras.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="data/staff.enc.js"></script>
-<script src="order.js"></script>
-<script src="guide.js"></script>
-<script src="map-adapter.js"></script>
-<script src="map-app.js"></script>
+<script src="price.js?v=20261103"></script>
+<script src="label.js?v=20261103"></script>
+<script src="extras.js?v=20261103"></script>
+<script src="data/staff.enc.js?v=20261103"></script>
+<script src="order.js?v=20261103"></script>
+<script src="guide.js?v=20261103"></script>
+<script src="map-adapter.js?v=20261103"></script>
+<script src="map-app.js?v=20261103"></script>
 </body>
 </html>

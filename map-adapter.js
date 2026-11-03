@@ -14,7 +14,7 @@
   };
 
   function create(el) {
-    const map = L.map(el, { zoomSnap: 0.25, zoomControl: true, attributionControl: true, tap: true });
+    const map = L.map(el, { zoomSnap: 0.25, zoomControl: true, attributionControl: true, tap: true, preferCanvas: !window.HAIFU_FORCE_SVG }); // canvas: 区画が多くても動きが軽い（2026-11-03）
     L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', {
       maxZoom: 18, minZoom: 10,
       attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">国土地理院</a>'
@@ -41,7 +41,7 @@
         const latlngs = z.polys.map(poly => poly.map(ring => ring.map(([lng, lat]) => [lat, lng])));
         let selected = false, preview = false;
         const base = () => (selected ? STYLE.selected() : preview ? STYLE.preview() : STYLE.normal(z.tone));
-        const layer = L.polygon(latlngs, STYLE.normal(z.tone)).addTo(map);
+        const layer = L.polygon(latlngs, Object.assign({ smoothFactor: 1.5 }, STYLE.normal(z.tone))).addTo(map);
         layer.on('click', () => handlers.onClick());
         layer.on('mouseover', () => { if (!selected) layer.setStyle(STYLE.hover()); handlers.onHover(true); });
         layer.on('mouseout', () => { layer.setStyle(base()); handlers.onHover(false); });

@@ -15,6 +15,7 @@ async function openPage(b, o) {
   o = o || {};
   var ctx = await b.newContext({ viewport: { width: o.w || 1440, height: o.h || 900 }, deviceScaleFactor: o.dsf || 1, isMobile: !!o.mobile, hasTouch: !!o.mobile });
   await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: 'http://localhost:' + PORT });
+  await ctx.addInitScript(function () { window.HAIFU_FORCE_SVG = true; }); // 本番の地図は canvas。ガイドの撮影は区画の位置を測るため SVG で描く（見た目は同じ）
   var p = await ctx.newPage();
   p.on('pageerror', function (e) { console.error('pageerror', e); });
   await p.route('https://msearch.gsi.go.jp/**', function (r) { r.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify(GEO) }); });
