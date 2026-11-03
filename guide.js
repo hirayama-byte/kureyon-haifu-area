@@ -1,4 +1,4 @@
-// 使い方ガイド（地図版）。右上の「使い方ガイド」から開く。
+// 使い方ガイド（地図版）。右上の「使い方ガイド」から開く。社内用（map.html）は guide/ を新しいタブで開き、この画面の中のガイドは代理店用（map2.html）だけで使う。
 //   左の目次から項目を選ぶと説明が出る。「この場所を見る」で画面のその部分を光らせて教える
 (function () {
   'use strict';
@@ -160,7 +160,11 @@
 
   function init() {
     let dlg = null;
-    $('guideBtn').addEventListener('click', () => { dlg = dlg || build(); dlg.showModal(); });
+    // 社内用（map.html）は、写真と動きの入った使い方ガイド（guide/）を新しいタブで開く（2026-11-03）。代理店用（map2.html）は今までどおりこの画面の中のガイド
+    $('guideBtn').addEventListener('click', () => {
+      if (!window.HAIFU_AGENCY) { window.open('guide/', '_blank', 'noopener'); return; }
+      dlg = dlg || build(); dlg.showModal();
+    });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>配布エリア選択シート 使い方ガイド</title>
+<style>
+  :root { --text: #0f172a; --muted: #475569; --faint: #94a3b8; --line: #e2e8f0; --bg: #f8fafc; --card: #fff; --accent: #ea580c; --accent-weak: #fff7ed; --warn: #fef3c7; --warn-text: #92400e; --side: #0f172a; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 16px; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif; font-size: 15.5px; line-height: 1.85; -webkit-text-size-adjust: 100%; }
+  a { color: var(--accent); }
+  header.top { background: var(--side); color: #fff; padding: 28px 16px 26px; }
+  header.top .in { max-width: 1120px; margin: 0 auto; }
+  header.top h1 { margin: 0 0 6px; font-size: 26px; letter-spacing: .02em; }
+  header.top p { margin: 0; color: #cbd5e1; font-size: 14.5px; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 24px 16px 60px; display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 32px; align-items: start; }
+  nav.toc { position: sticky; top: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 10px; max-height: calc(100vh - 32px); overflow: auto; }
+  nav.toc b { display: block; font-size: 12px; color: var(--muted); padding: 0 8px 6px; letter-spacing: .05em; }
+  nav.toc a { display: block; padding: 5px 8px; border-radius: 6px; color: var(--text); text-decoration: none; font-size: 14px; line-height: 1.5; }
+  nav.toc a:hover { background: var(--accent-weak); color: var(--accent); }
+  nav.toc a small { color: var(--faint); font-size: 11px; margin-left: 4px; }
+  main { min-width: 0; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 24px 26px; margin-bottom: 22px; }
+  h2 { margin: 0 0 14px; font-size: 21px; padding-bottom: 10px; border-bottom: 2px solid var(--accent-weak); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  h2 .no { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px; background: var(--accent); color: #fff; font-size: 15px; flex: none; }
+  h3 { margin: 22px 0 8px; font-size: 17px; }
+  p { margin: 0 0 12px; }
+  ul, ol { margin: 0 0 14px; padding-left: 1.4em; }
+  li { margin-bottom: 4px; }
+  figure { margin: 14px 0 20px; }
+  figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 10px; background: #fff; box-shadow: 0 2px 10px rgba(15, 23, 42, .06); }
+  figure.s img { max-width: 420px; }
+  figure.m img { max-width: 620px; }
+  figure.xs img { max-width: 280px; }
+  figcaption { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .pair { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
+  .pair figure { flex: 1 1 260px; margin-top: 6px; }
+  .note { background: var(--accent-weak); border-left: 4px solid var(--accent); border-radius: 8px; padding: 10px 14px; margin: 12px 0 16px; font-size: 14.5px; }
+  .warn { background: var(--warn); border-left: 4px solid #f59e0b; color: var(--warn-text); border-radius: 8px; padding: 10px 14px; margin: 12px 0 16px; font-size: 14.5px; }
+  .admin { display: inline-block; font-size: 12px; font-weight: 700; color: #7c2d12; background: #ffedd5; border: 1px solid #fdba74; border-radius: 999px; padding: 1px 10px; line-height: 1.7; }
+  .key { display: inline-block; border: 1px solid #cbd5e1; border-bottom-width: 2px; border-radius: 6px; padding: 0 7px; font-size: 13px; background: #fff; line-height: 1.6; white-space: nowrap; }
+  table { border-collapse: collapse; width: 100%; margin: 6px 0 16px; font-size: 14.5px; }
+  th, td { border: 1px solid var(--line); padding: 7px 10px; text-align: left; vertical-align: top; }
+  th { background: #f1f5f9; font-weight: 700; white-space: nowrap; }
+  .tbl { overflow-x: auto; }
+  .sw { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 6px; border: 1px solid rgba(0,0,0,.08); }
+  .faq dt { font-weight: 700; margin-top: 14px; }
+  .faq dt::before { content: "Q. "; color: var(--accent); }
+  .faq dd { margin: 4px 0 0; padding-left: 1.6em; }
+  .back { display: inline-block; margin-top: 4px; font-size: 13px; }
+  footer { text-align: center; color: var(--faint); font-size: 12.5px; padding: 10px 16px 30px; }
+
+  /* demo-css:start */
+  /* 動きで見る（ポインターが次に押す場所へ動く）: guide/build-demos.js が index.html に入れる。ここを直したら build-demos.js を実行 */
+  .demo { display: flex; gap: 22px; align-items: flex-start; flex-wrap: wrap; margin: 10px 0 22px; padding: 16px; background: #f8fafc; border: 1px solid var(--line); border-radius: 12px; }
+  .demo.wide { display: block; }
+  .demo .stage { position: relative; flex: 0 0 auto; max-width: 100%; }
+  .demo.wide .stage { margin: 0 auto; }
+  .demo .stage img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 10px; background: #fff; box-shadow: 0 2px 10px rgba(15, 23, 42, .06); transition: opacity .18s; }
+  .demo .stage img.fade { opacity: 0; }
+  .demo .ptr { position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; margin: -2.5px 0 0 -5px; pointer-events: none; z-index: 5; transition: left .9s cubic-bezier(.45,.05,.3,1), top .9s cubic-bezier(.45,.05,.3,1), transform .15s, opacity .2s; filter: drop-shadow(0 2px 3px rgba(0,0,0,.35)); }
+  .demo .ptr svg { display: block; }
+  .demo .ptr.press { transform: scale(.82); }
+  .demo .ptr.drag { transition-duration: 1.1s; }
+  .demo .ring { position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 50%; border: 3px solid var(--accent); opacity: 0; pointer-events: none; z-index: 3; }
+  .demo .ring.go { animation: demoRing .7s ease-out; }
+  @keyframes demoRing { from { transform: scale(.3); opacity: .9; } to { transform: scale(1.3); opacity: 0; } }
+  .demo .hl { position: absolute; z-index: 2; border: 3px solid var(--accent); border-radius: 8px; background: rgba(234, 88, 12, .10); box-shadow: 0 0 0 4px rgba(13, 148, 136, .18); pointer-events: none; opacity: 0; transition: left .6s, top .6s, width .6s, height .6s, opacity .25s; }
+  .demo .hl.on { opacity: 1; }
+  .demo .badge { position: absolute; z-index: 6; min-width: 26px; height: 26px; padding: 0 7px; border-radius: 13px; background: var(--accent); color: #fff; font: 700 13px/26px system-ui, sans-serif; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,.25); transform: translate(14px, 14px); transition: left .9s cubic-bezier(.45,.05,.3,1), top .9s cubic-bezier(.45,.05,.3,1), opacity .2s; pointer-events: none; }
+  .demo .typing { position: absolute; z-index: 4; max-width: 92%; padding: 5px 10px; border-radius: 8px; background: #0f172a; color: #fff; font: 600 13px/1.5 system-ui, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 3px 10px rgba(0,0,0,.25); pointer-events: none; opacity: 0; transition: opacity .2s; }
+  .demo .typing.on { opacity: 1; }
+  .demo .typing::before { content: "⌨ "; opacity: .8; }
+  .demo .typing::after { content: ""; display: inline-block; width: 2px; height: 1em; margin-left: 2px; background: #5eead4; vertical-align: -2px; animation: demoCaret .8s steps(1) infinite; }
+  @keyframes demoCaret { 50% { opacity: 0; } }
+  .demo.instant .ptr, .demo.instant .badge, .demo.instant .hl, .demo.instant .stage img { transition: none !important; }
+  .demo .side { flex: 1 1 240px; min-width: 0; }
+  .demo.wide .side { margin-top: 14px; }
+  .demo .side h4 { margin: 0 0 8px; font-size: 15px; }
+  .demo ol.steps { margin: 0 0 12px; padding: 0; list-style: none; counter-reset: st; }
+  .demo.wide ol.steps { columns: 2; column-gap: 12px; }
+  .demo ol.steps li { counter-increment: st; position: relative; padding: 7px 10px 7px 40px; margin: 0 0 4px; border-radius: 8px; color: var(--muted); transition: background .3s, color .3s; font-size: 14.5px; line-height: 1.55; break-inside: avoid; cursor: pointer; }
+  .demo ol.steps li::before { content: counter(st); position: absolute; left: 10px; top: 7px; width: 22px; height: 22px; border-radius: 50%; background: #e2e8f0; color: var(--muted); font: 700 12px/22px system-ui, sans-serif; text-align: center; transition: background .3s, color .3s; }
+  .demo ol.steps li.on { background: var(--accent-weak); color: var(--text); font-weight: 700; }
+  .demo ol.steps li.on::before { background: var(--accent); color: #fff; }
+  .demo ol.steps li.done::before { background: #99f6e4; color: #115e59; }
+  .demo .ctl { display: flex; gap: 8px; }
+  .demo .ctl button { font: inherit; font-size: 13px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 5px 12px; cursor: pointer; color: var(--text); }
+  .demo .ctl button:hover { border-color: var(--accent); color: var(--accent); }
+  .demo .now { display: none; flex: 1 1 100%; margin-top: -12px; padding: 8px 10px; border-radius: 8px; background: var(--accent-weak); border-left: 4px solid var(--accent); font-size: 14px; font-weight: 700; line-height: 1.5; min-height: 2.6em; }
+  .demo.wide .now { margin-top: 8px; }
+  @media (max-width: 860px) { .demo .now { display: block; } .demo.wide ol.steps { columns: 1; } } /* スマホ: 手順の一覧は写真の下なので、今の手順を写真のすぐ下にも出す */
+  @media (max-width: 860px) { .demo { padding: 10px; gap: 14px; } }
+  @media (prefers-reduced-motion: reduce) { .demo .ptr, .demo .badge, .demo .hl { transition: none; } .demo .ring.go { animation: none; } }
+  /* demo-css:end */
+  @media (max-width: 860px) {
+    .wrap { grid-template-columns: minmax(0, 1fr); gap: 16px; padding-top: 16px; }
+    nav.toc { position: static; max-height: none; columns: 2; column-gap: 8px; }
+    nav.toc b { column-span: all; }
+    nav.toc a { break-inside: avoid; }
+    section { padding: 18px 16px; border-radius: 12px; }
+    header.top h1 { font-size: 22px; }
+    h2 { font-size: 19px; }
+    body { font-size: 15px; }
+  }
+  @media (max-width: 420px) { nav.toc { columns: 1; } }
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <h1>配布エリア選択シート 使い方ガイド</h1>
+  <p>情報誌くれよん 同時配布の区画を地図で選んで、配布できる部数と配布料金（税別）をその場で出すシートです。</p>
+</div></header>
+
+<div class="wrap">
+<nav class="toc" aria-label="目次">
+  <b>目次</b>
+  <a href="#start">1. はじめに（3ステップ）</a>
+  <a href="#screen">2. 画面の見方</a>
+  <a href="#area">3. エリア（版）を切り替える</a>
+  <a href="#pick">4. 区画を選ぶ・外す</a>
+  <a href="#omakase">5. おまかせ選択</a>
+  <a href="#circle">6. 円で選ぶ</a>
+  <a href="#adjust">7. 部数の調整（端数合わせ）</a>
+  <a href="#fee">8. 配布料金の計算</a>
+  <a href="#share">9. お客様・社内に送る</a>
+  <a href="#saved">10. 保存した選択・申込書</a>
+  <a href="#mobile">11. スマホで使う</a>
+  <a href="#faq">12. よくある質問</a>
+</nav>
+
+<main>
+
+<section id="start">
+  <h2><span class="no">1</span>はじめに（3ステップ）</h2>
+<!-- demo:start -->
+  <h3>動きで見る：見積もりの基本（3ステップ）</h3>
+  <div class="demo" data-demo="start">
+    <div class="stage" style="width:1000px"><img src="img/demo-start-1.jpg" alt="配布エリア選択シートの画面" width="1440" height="900" loading="lazy"></div>
+    <div class="side"><h4>この順に押します</h4><ol class="steps"></ol><div class="ctl"><button type="button" data-act="pause">一時停止</button><button type="button" data-act="again">最初から</button></div></div>
+    <script type="application/json">{"images":[{"src":"img/demo-start-1.jpg","w":1440,"h":900,"dw":1000,"alt":"配布エリア選択シートの画面"},{"src":"img/demo-start-2.jpg","w":1440,"h":900,"dw":1000,"alt":"区画を選んだところ"}],"steps":[{"img":0,"x":27,"y":2.7,"t":"上のボタンで、配布したいエリア（版）を選びます","box":{"x":25,"y":1,"w":4,"h":3.4}},{"img":0,"x":36,"y":69,"t":"地図の区画を押して選びます（もう一度押すと外れます）","box":{"x":36,"y":68.8,"w":0.1,"h":0.2},"more":[{"x":38.3,"y":83.6},{"x":38.5,"y":80.9}]},{"img":1,"x":86.3,"y":15.1,"t":"右上に合計部数と、選んだ区画の数が出ます","box":{"x":75.2,"y":8.9,"w":22.1,"h":12.3},"look":{"x":74.9,"y":8.5,"w":22.6,"h":13.2}},{"img":1,"x":86.3,"y":62,"t":"配布料金（税別）も自動で出ます","box":{"x":75.2,"y":58.5,"w":22.1,"h":6.9},"look":{"x":74.9,"y":58.1,"w":22.6,"h":7.8}},{"img":1,"x":80.6,"y":76.8,"t":"「選択内容をコピー」で、メールやLINEに貼り付けられます","box":{"x":75.2,"y":74.3,"w":10.8,"h":4.9}}]}</script>
+  </div>
+<!-- /demo:start -->
+  <p>配布エリアを選ぶと、<b>配布できる部数</b>と<b>配布料金（税別）</b>がその場で出ます。ログインは要りません。</p>
+  <ol>
+    <li><b>エリアを選ぶ</b>：上の「一宮」「稲沢」などのボタンで、配布したい版を選びます。</li>
+    <li><b>区画を選ぶ</b>：地図の区画を押すか、下の「区画一覧」のチェックで選びます。住所と部数から自動で選ぶ「<a href="#omakase">おまかせ選択</a>」もあります。</li>
+    <li><b>右の合計を見る</b>：合計部数と配布料金が出ます。「<b>選択内容をコピー</b>」でメールやLINEに貼り付けられます。</li>
+  </ol>
+  <div class="note">困ったときは、右上の合計部数の横の「<b>リセット</b>」で、選んだ区画をすべて外してやり直せます。</div>
+</section>
+
+<section id="screen">
+  <h2><span class="no">2</span>画面の見方</h2>
+<!-- demo:screen -->
+  <h3>動きで見る：画面のどこに何があるか</h3>
+  <div class="demo" data-demo="screen">
+    <div class="stage" style="width:1000px"><img src="img/demo-screen-1.jpg" alt="画面全体" width="1440" height="900" loading="lazy"></div>
+    <div class="side"><h4>見る場所</h4><ol class="steps"></ol><div class="ctl"><button type="button" data-act="pause">一時停止</button><button type="button" data-act="again">最初から</button></div></div>
+    <script type="application/json">{"images":[{"src":"img/demo-screen-1.jpg","w":1440,"h":900,"dw":1000,"alt":"画面全体"},{"src":"img/demo-screen-2.jpg","w":1008,"h":832,"dw":1008,"alt":"区画一覧"}],"steps":[{"img":0,"x":52.9,"y":2.7,"t":"いちばん上：エリア（版）の切り替え","box":{"x":25,"y":1,"w":56,"h":3.4},"look":{"x":24.7,"y":0.6,"w":56.5,"h":4.3}},{"img":0,"x":94.9,"y":2.7,"t":"右上：この使い方ガイド","box":{"x":91,"y":0.9,"w":7.9,"h":3.6},"look":{"x":90.7,"y":0.4,"w":8.5,"h":4.5}},{"img":0,"x":17,"y":10.2,"t":"住所・町名で地図を動かす欄","box":{"x":2.4,"y":8,"w":29.2,"h":4.3},"look":{"x":2.2,"y":7.6,"w":29.7,"h":5.2}},{"img":0,"x":37,"y":25.2,"t":"円で選ぶ（ピンからの半径）","box":{"x":1.6,"y":22.5,"w":70.8,"h":5.6},"look":{"x":1.6,"y":22.5,"w":70.8,"h":5.6}},{"img":0,"x":37,"y":32.1,"t":"おまかせ選択（住所＋部数）","box":{"x":1.6,"y":28,"w":70.8,"h":8.2},"look":{"x":1.6,"y":28,"w":70.8,"h":8.2}},{"img":0,"x":37,"y":74.5,"t":"地図：区画を押して選びます","box":{"x":1.6,"y":36.2,"w":70.8,"h":76.7},"look":{"x":2,"y":36.8,"w":70,"h":75.3}},{"img":0,"x":86.3,"y":42.4,"t":"右：合計部数と配布料金","box":{"x":73.9,"y":6.8,"w":24.7,"h":71.1},"look":{"x":73.6,"y":6.4,"w":25.3,"h":72}},{"img":0,"x":86.3,"y":86.8,"t":"右下：保存した選択","box":{"x":73.9,"y":79.5,"w":24.7,"h":14.7},"look":{"x":73.6,"y":79,"w":25.3,"h":15.6}},{"img":1,"x":50,"y":10.5,"t":"地図の下（左の列を下へ動かす）：区画一覧。チェックでも選べます","box":{"x":1.2,"y":1.5,"w":97.6,"h":17.9},"look":{"x":0.8,"y":1,"w":98.4,"h":18.9}}]}</script>
+  </div>
+<!-- /demo:screen -->
+  <ul>
+    <li><b>いちばん上</b>：エリア（版）の切り替えボタンと、データの更新日、「使い方ガイド」。</li>
+    <li><b>左の列</b>：住所で地図を動かす欄・「円で選ぶ」・「おまかせ選択」・地図。その下に<b>区画一覧</b>があります（パソコンでは左の列だけで上下に動きます）。</li>
+    <li><b>右の列</b>：合計部数・配布料金の計算・コピーと共有のボタン・保存した選択。</li>
+  </ul>
+  <p>地図の区画は地域ごとに色分けされています（色の見本は地図の上）。選んだ区画は<b>オレンジ色</b>になります。区画にマウスを乗せると、名前と部数が出ます。</p>
+</section>
+
+<section id="area">
+  <h2><span class="no">3</span>エリア（版）を切り替える</h2>
+<!-- demo:area -->
+  <h3>動きで見る：エリア（版）を切り替える</h3>
+  <div class="demo" data-demo="area">
+    <div class="stage" style="width:900px"><img src="img/demo-area-1.jpg" alt="一宮の地図" width="1428" height="620" loading="lazy"></div>
+    <div class="side"><h4>この順に押します</h4><ol class="steps"></ol><div class="ctl"><button type="button" data-act="pause">一時停止</button><button type="button" data-act="again">最初から</button></div></div>
+    <script type="application/json">{"images":[{"src":"img/demo-area-1.jpg","w":1428,"h":620,"dw":900,"alt":"一宮の地図"},{"src":"img/demo-area-2.jpg","w":1428,"h":620,"dw":900,"alt":"稲沢の地図"}],"steps":[{"img":0,"x":31.3,"y":3.9,"t":"切り替えたいエリアのボタンを押します（ここでは「稲沢」）","box":{"x":29.2,"y":1.5,"w":4.1,"h":4.9}},{"img":1,"x":48.5,"y":14.8,"t":"地図と、地域ごとの色分けが切り替わります","box":{"x":38,"y":13.1,"w":20.9,"h":3.4},"look":{"x":37.8,"y":12.4,"w":21.5,"h":4.6}},{"img":1,"x":36.9,"y":65.4,"t":"計算・申込書にできるのは、表示しているエリアだけです","box":{"x":1.2,"y":39.5,"w":71.4,"h":111.3},"look":{"x":1.6,"y":40.5,"w":70.6,"h":109.4}}]}</script>
+  </div>
+<!-- /demo:area -->
+  <ul>
+    <li>いちばん上のボタンで、エリアを切り替えます（一宮／稲沢／江南・大口・扶桑・岩倉／北名古屋／清須・あま／津島・大治・愛西・蟹江／西区・北区）。</li>
+    <li>エリアごとに選んだ区画は覚えています。切り替えて戻っても消えません。</li>
+    <li>1回に計算・申込書にできるのは、<b>表示しているエリアだけ</b>です。2つの版にまたがるときは、エリアごとに計算してください。</li>
+  </ul>
+</section>
+
+<section id="pick">
+  <h2><span class="no">4</span>区画を選ぶ・外す</h2>
+<!-- demo:pick -->
+  <h3>動きで見る：区画を選ぶ・外す</h3>
+  <div class="demo" data-demo="pick">
+    <div class="stage" style="width:900px"><img src="img/demo-pick-1.jpg" alt="地図" width="1022" height="640" loading="lazy"></div>
+    <div class="side"><h4>この順に押します</h4><ol class="steps"></ol><div class="ctl"><button type="button" data-act="pause">一時停止</button><button type="button" data-act="again">最初から</button></div></div>
+    <script type="application/json">{"images":[{"src":"img/demo-pick-1.jpg","w":1022,"h":640,"dw":900,"alt":"地図"},{"src":"img/demo-pick-2.jpg","w":1022,"h":640,"dw":900,"alt":"区画を選んだ地図"},{"src":"img/demo-pick-3.jpg","w":1008,"h":832,"dw":1008,"alt":"区画一覧"}],"steps":[{"img":0,"x":48.6,"y":87.4,"t":"地図の区画を押すと選ばれます","box":{"x":48.5,"y":87.3,"w":0.2,"h":0.3},"more":[{"x":51.8,"y":108}]},{"img":1,"x":48.6,"y":87.4,"t":"選んだ区画はオレンジ色。もう一度押すと外れます","box":{"x":48.5,"y":87.3,"w":0.2,"h":0.3},"look":{"x":47.2,"y":85.1,"w":2.9,"h":4.7}},{"img":1,"x":9.1,"y":4.8,"t":"住所・町名を入れて「移動」で、その場所へ地図が動きます","box":{"x":1.3,"y":1.8,"w":35,"h":6},"type":"国府宮"},{"img":1,"x":5.6,"y":18.7,"t":"拡大すると区画の名前が出ます。「番号を表示」で消せます","box":{"x":1.3,"y":17.1,"w":8.7,"h":3.2}},{"img":2,"x":2.9,"y":29.7,"t":"区画一覧のチェックでも、同じように選べます","box":{"x":2.1,"y":28.7,"w":1.6,"h":1.9}},{"img":2,"x":7.6,"y":8.1,"t":"「○○をすべて選択」でその地域をまとめて選択（もう一度押すと外れます）","box":{"x":1.2,"y":6.2,"w":12.8,"h":3.9}},{"img":2,"x":45.7,"y":17.5,"t":"「すべて解除」で、このエリアの選択を全部外します","box":{"x":41.2,"y":15.5,"w":8.9,"h":3.9}}]}</script>
+  </div>
+<!-- /demo:pick -->
+  <ul>
+    <li><b>地図の区画を押す</b>と選ばれて、オレンジ色になります。もう一度押すと外れます。</li>
+    <li>下の<b>区画一覧のチェック</b>でも同じように選べます（行のどこを押してもかまいません）。</li>
+    <li>一覧の上の「<b>○○をすべて選択</b>」で、その地域をまとめて選べます。その地域が全部選ばれているときに押すと、その地域だけ全部外れます。「<b>すべて解除</b>」は、このエリアの選択を全部外します。</li>
+    <li>地図はマウスのホイールで拡大・縮小、ドラッグで移動できます。拡大すると区画の名前が出ます（「番号を表示」のチェックを外すと消えます）。</li>
+    <li>地図の上の欄に住所や町名を入れて「<b>移動</b>」を押すと、その場所へ地図が動きます。</li>
+  </ul>
+</section>
+
+<section id="omakase">
+  <h2><span class="no">5</span>おまかせ選択（住所＋部数）</h2>
+<!-- demo:omakase -->
+  <h3>動きで見る：住所と部数でおまかせ選択</h3>
+  <div class="demo" data-demo="omakase">
+    <div class="stage" style="width:900px"><img src="img/demo-omakase-1.jpg" alt="おまかせ選択の欄" width="1020" height="560" loading="lazy"></div>
+    <div class="side"><h4>この順に押します</h4><ol class="steps"></ol><div class="ctl"><button type="button" data-act="pause">一時停止</button><button type="button" data-act="again">最初から</button></div></div>
+    <script type="application/json">{"images":[{"src":"img/demo-omakase-1.jpg","w":1020,"h":560,"dw":900,"alt":"おまかせ選択の欄"},{"src":"img/demo-omakase-2.jpg","w":1440,"h":900,"dw":1000,"alt":"おまかせで選んだところ"}],"steps":[{"img":0,"x":21.4,"y":4.4,"t":"お客様の住所を入れます","box":{"x":9.6,"y":1.5,"w":67.5,"h":5.9},"type":"一宮市木曽川町里小牧寺東125"},{"img":0,"x":82.7,"y":4.4,"t":"部数を入れます","box":{"x":77.8,"y":1.5,"w":11.8,"h":5.9},"type":"20000"},{"img":0,"x":94.6,"y":4.4,"t":"「おまかせ」を押します","box":{"x":90.4,"y":1.6,"w":8.4,"h":5.5}},{"img":1,"x":35,"y":67.8,"t":"住所の場所に赤い★。近い区画から順に選ばれます","box":{"x":34,"y":66.2,"w":2.1,"h":3.3},"look":{"x":33.5,"y":65.5,"w":2.9,"h":4.7}},{"img":1,"x":37,"y":37,"t":"選んだ結果がここに出ます","box":{"x":2.4,"y":35.8,"w":69.2,"h":2.3},"look":{"x":2.2,"y":35.4,"w":69.7,"h":3.2}},{"img":1,"x":86.3,"y":20.1,"t":"いちばん遠い区画で部数を減らして、ちょうどの部数にします","box":{"x":75.2,"y":8.9,"w":22.1,"h":22.4},"look":{"x":74.9,"y":8.5,"w":22.6,"h":23.3}}]}</script>
+  </div>
+<!-- /demo:omakase -->
+  <p>お客様の住所と部数を入れるだけで、<b>近い区画から自動で選んで、ちょうどの部数</b>にします。</p>
+  <ul>
+    <li>住所に近い区画から順に選び、部数を超えた分は<b>いちばん遠い区画で減らして</b>調整します（減らした分は「<a href="#adjust">部数の調整</a>」に入ります）。</li>
+    <li>住所の場所には赤い★が付きます。</li>
+    <li>押すたびに、前の選択はいったん消えてから選び直されます。選んだあとに、区画を足したり外したりもできます。</li>
+  </ul>
+  <div class="note">先に正しいエリア（版）を選んでから押してください。住所がエリアから離れているときは、注意が出ます。</div>
+</section>
+
+<section id="circle">
+  <h2><span class="no">6</span>円で選ぶ（ピンから半径）</h2>
+<!-- demo:circle -->
+  <h3>動きで見る：ピンから半径で選ぶ</h3>
+  <div class="demo" data-demo="circle">
+    <div class="stage" style="width:900px"><img src="img/demo-circle-1.jpg" alt="円で選ぶの欄" width="1020" height="560" loading="lazy"></div>
+    <div class="side"><h4>この順に押します</h4><ol class="steps"></ol><div class="ctl"><button type="button" data-act="pause">一時停止</button><button type="button" data-act="again">最初から</button></div></div>
+    <script type="application/json">{"images":[{"src":"img/demo-circle-1.jpg","w":1020,"h":560,"dw":900,"alt":"円で選ぶの欄"},{"src":"img/demo-circle-2.jpg","w":1020,"h":697,"dw":900,"alt":"ピンと円"}],"steps":[{"img":0,"x":26.1,"y":4.4,"t":"地図をお店のあたりへ動かして「地図の中心にピンを置く」","box":{"x":17.8,"y":1.7,"w":16.6,"h":5.5}},{"img":1,"x":50,"y":73.9,"t":"ピンはドラッグで動かせます","box":{"x":48.6,"y":71.2,"w":2.7,"h":5.5},"drag":{"x":53.9,"y":76.8}},{"img":1,"x":13.5,"y":3.5,"t":"半径（0.5〜5km）を選びます","box":{"x":10,"y":1.2,"w":7.1,"h":4.7}},{"img":1,"x":50,"y":8.3,"t":"円の中の区画の数と部数が出ます","box":{"x":1.2,"y":6.8,"w":97.6,"h":3},"look":{"x":0.8,"y":6.2,"w":98.4,"h":4.1}},{"img":1,"x":8.6,"y":12.8,"t":"「この円の区画を追加」でまとめて選びます","box":{"x":1.2,"y":10.6,"w":14.8,"h":4.4}},{"img":1,"x":30.1,"y":12.8,"t":"部数を決めるときは、部数を入れて…","box":{"x":25.2,"y":10.6,"w":11.8,"h":4.4},"type":"10000"},{"img":1,"x":44.7,"y":12.8,"t":"「この部数でおまかせ」：ピンから近い順にちょうどの部数","box":{"x":37.7,"y":10.6,"w":14,"h":4.4}},{"img":1,"x":20.6,"y":12.8,"t":"終わったら「円を消す」","box":{"x":16.7,"y":10.6,"w":7.6,"h":4.4}}]}</script>
+  </div>
+<!-- /demo:circle -->
+  <ol>
+    <li>地図をお店の場所あたりへ動かして、「<b>地図の中心にピンを置く</b>」を押します（もう一度押すと、ピンが今の地図の中心へ移ります）。</li>
+    <li>半径（0.5〜5km）を選ぶと、円の中に入る区画の数と部数が出ます。ピンはドラッグで動かせます。</li>
+    <li>「<b>この円の○区画を追加</b>」で、円の中の区画をまとめて選べます。</li>
+  </ol>
+  <p><b>部数を決めて選ぶとき</b>：ピンを置くと出る部数の欄に部数を入れて「<b>この部数でおまかせ</b>」を押すと、ピンから近い順に選んで、ちょうどの部数にします（円の外の区画も足します）。終わったら「<b>円を消す</b>」を押します。</p>
+</section>
+
+<section id="adjust">
+  <h2><span class="no">7</span>部数の調整（端数合わせ）</h2>
+<!-- demo:adjust -->
+  <h3>動きで見る：部数の端数をそろえる</h3>
+  <div class="demo" data-demo="adjust">
+    <div class="stage" style="width:342px"><img src="img/demo-adjust-1.png" alt="部数の調整" width="342" height="374" loading="lazy"></div>
+    <div class="side"><h4>この順に押します</h4><ol class="steps"></ol><div class="ctl"><button type="button" data-act="pause">一時停止</button><button type="button" data-act="again">最初から</button></div></div>
+    <script type="application/json">{"images":[{"src":"img/demo-adjust-1.png","w":342,"h":374,"dw":342,"alt":"部数の調整"},{"src":"img/demo-adjust-2.png","w":342,"h":444,"dw":342,"alt":"端数をそろえたところ"}],"steps":[{"img":0,"x":26.2,"y":89.9,"t":"「千部単位にそろえる」で、端数を自動で1つの区画から減らします","box":{"x":6.7,"y":86,"w":39,"h":7.8}},{"img":0,"x":33.9,"y":79.3,"t":"自分で決めるときは、減らす区画を選んで…","box":{"x":6.7,"y":74.3,"w":54.4,"h":9.9}},{"img":0,"x":78.1,"y":79.3,"t":"減らす部数を入れます","box":{"x":67.5,"y":74.2,"w":21.1,"h":10.3},"type":"300"},{"img":1,"x":50,"y":20.3,"t":"減らした区画と部数は、合計の下と申込書に「※部数調整」で出ます","box":{"x":3.5,"y":18.3,"w":93,"h":4.1},"look":{"x":2.3,"y":17.4,"w":95.3,"h":5.9}}]}</script>
+  </div>
+<!-- /demo:adjust -->
+  <p>合計を「30,000部」のようなきりのいい数にしたいときに使います。</p>
+  <ul>
+    <li>「<b>千部単位にそろえる</b>」を押すと、端数を1つの区画から自動で減らします（減らす区画を選んでいればその区画、選んでいなければ部数がいちばん多い区画）。</li>
+    <li>自分で決めるときは、「区画を選ぶ」で減らす区画を選び、減らす部数を入れます。</li>
+    <li>減らした区画と部数は、合計の下と申込書に「※部数調整」として出ます。</li>
+  </ul>
+</section>
+
+<section id="fee">
+  <h2><span class="no">8</span>配布料金の計算</h2>
+<!-- demo:fee -->
+  <h3>動きで見る：配布料金を計算する</h3>
+  <div class="demo" data-demo="fee">
+    <div class="stage" style="width:342px"><img src="img/demo-fee-1.png" alt="配布料金の計算" width="342" height="410" loading="lazy"></div>
+    <div class="side"><h4>この順に押します</h4><ol class="steps"></ol><div class="ctl"><button type="button" data-act="pause">一時停止</button><button type="button" data-act="again">最初から</button></div></div>
+    <script type="application/json">{"images":[{"src":"img/demo-fee-1.png","w":342,"h":410,"dw":342,"alt":"配布料金の計算"}],"steps":[{"img":0,"x":18.2,"y":21.4,"t":"チラシサイズ（A4〜A2）を選びます","box":{"x":3.5,"y":17.1,"w":29.4,"h":8.5}},{"img":0,"x":50,"y":21.4,"t":"折加工が必要なときは「必要」（A4は折加工なし）","box":{"x":35.3,"y":17.1,"w":29.4,"h":8.5}},{"img":0,"x":81.8,"y":21.4,"t":"挟み込み配布が必要なときは「必要」","box":{"x":67.1,"y":17.1,"w":29.4,"h":8.5}},{"img":0,"x":82.5,"y":65.4,"t":"サイズ単価は書き換えられます（「手動」と出ます）","box":{"x":73.1,"y":61.7,"w":18.7,"h":7.4},"type":"6.5"},{"img":0,"x":50,"y":89.2,"t":"配布料金（税別）＝ 部数 ×（サイズ単価＋折加工＋挟み込み）","box":{"x":3.5,"y":81.6,"w":93,"h":15.2},"look":{"x":2.3,"y":80.7,"w":95.3,"h":17.2}}]}</script>
+  </div>
+<!-- /demo:fee -->
+  <ul>
+    <li>チラシサイズ・折加工・挟み込み配布を選ぶと、配布料金（税別）が変わります。</li>
+    <li>配布料金 ＝ 合計部数（調整後）×（サイズ単価＋折加工＋挟み込み）。</li>
+  </ul>
+  <div class="tbl"><table>
+    <tr><th>サイズ単価</th><td>合計部数で変わります（5,000部未満／1万部未満／3万部未満／3万部以上）。A4・B4：7.0／6.5／6.0／5.0円、A3：7.5／7.0／6.5／5.5円、B3・A2：8.0／7.5／7.0／6.0円</td></tr>
+    <tr><th>折加工</th><td>B4・A3：＋2円、B3・A2：＋4円（A4は折加工なし）</td></tr>
+    <tr><th>挟み込み配布</th><td>＋2円</td></tr>
+  </table></div>
+  <ul>
+    <li><b>サイズ単価は書き換えられます。</b>別のエリアとの合算で安い段階になるときなどは、サイズ単価の欄に単価を入れてください（「手動」と表示され、コピー文・保存・申込書にも使われます）。</li>
+  </ul>
+</section>
+
+<section id="share">
+  <h2><span class="no">9</span>お客様・社内に送る</h2>
+<!-- demo:share -->
+  <h3>動きで見る：お客様・社内に送る</h3>
+  <div class="demo" data-demo="share">
+    <div class="stage" style="width:350px"><img src="img/demo-share-1.png" alt="コピーと共有のボタン" width="350" height="284" loading="lazy"></div>
+    <div class="side"><h4>この順に押します</h4><ol class="steps"></ol><div class="ctl"><button type="button" data-act="pause">一時停止</button><button type="button" data-act="again">最初から</button></div></div>
+    <script type="application/json">{"images":[{"src":"img/demo-share-1.png","w":350,"h":284,"dw":350,"alt":"コピーと共有のボタン"},{"src":"img/demo-share-2.png","w":350,"h":475,"dw":350,"alt":"コピーしたところ"}],"steps":[{"img":0,"x":26.7,"y":62.3,"t":"「選択内容をコピー」：区画・部数・料金を文章でコピーします","box":{"x":4.6,"y":54.5,"w":44.3,"h":15.6}},{"img":1,"x":50,"y":48.4,"t":"メールやLINEにそのまま貼り付けられます","box":{"x":4.6,"y":44,"w":90.9,"h":8.8},"look":{"x":3.4,"y":43.2,"w":93.1,"h":10.4}},{"img":1,"x":50,"y":90.9,"t":"下の「保存した選択」にも自動で残ります","box":{"x":3.4,"y":84.5,"w":93.1,"h":12.9},"look":{"x":2.3,"y":83.6,"w":95.4,"h":14.6}},{"img":1,"x":73.3,"y":37.2,"t":"「このURLを共有」：開くと同じ区画が選ばれた状態で開くURLです","box":{"x":51.1,"y":32.6,"w":44.3,"h":9.3}}]}</script>
+  </div>
+<!-- /demo:share -->
+  <ul>
+    <li>「<b>選択内容をコピー</b>」：選んだ区画・部数・料金を文章でコピーします。メールやLINEにそのまま貼り付けられます。同時に「保存した選択」にも残ります。</li>
+    <li>「<b>このURLを共有</b>」：今の選び方が入ったURLをコピーします。受け取った人がURLを開くと、同じ区画が選ばれた状態で開きます。</li>
+  </ul>
+</section>
+
+<section id="saved">
+  <h2><span class="no">10</span>保存した選択・申込書</h2>
+<!-- demo:saved -->
+  <h3>動きで見る：保存した選択を使う・申込書を作る</h3>
+  <div class="demo" data-demo="saved">
+    <div class="stage" style="width:376px"><img src="img/demo-saved-1.png" alt="保存した選択" width="376" height="283" loading="lazy"></div>
+    <div class="side"><h4>この順に押します</h4><ol class="steps"></ol><div class="ctl"><button type="button" data-act="pause">一時停止</button><button type="button" data-act="again">最初から</button></div></div>
+    <script type="application/json">{"images":[{"src":"img/demo-saved-1.png","w":376,"h":283,"dw":376,"alt":"保存した選択"},{"src":"img/demo-saved-2.png","w":576,"h":244,"dw":576,"alt":"申込書のパスワード"}],"steps":[{"img":0,"x":34.8,"y":53.1,"t":"メモ欄にクライアント名を入れておくと探しやすくなります","box":{"x":16.2,"y":48.5,"w":39.6,"h":9.1},"type":"ラーメン一番 様"},{"img":0,"x":62.2,"y":56.2,"t":"「開く」でその選び方に戻ります","box":{"x":57.4,"y":51.3,"w":9.6,"h":9.8}},{"img":0,"x":75.9,"y":56.2,"t":"「申込書DL」で配布会社向けの申込書PDF（A3・2枚）","box":{"x":67.8,"y":51.3,"w":16.3,"h":9.8}},{"img":1,"x":11.8,"y":55.4,"t":"スタッフ用です。社内で共有しているパスワードを入れて…","box":{"x":4.9,"y":46.5,"w":78.1,"h":17.9},"type":"••••"},{"img":1,"x":89.6,"y":55.4,"t":"「確認」を押すと、申込書の入力欄が出ます","box":{"x":84,"y":46.5,"w":11.1,"h":17.9}},{"img":0,"x":11.7,"y":56.2,"t":"いらない保存は、チェックして…","box":{"x":9.6,"y":53.3,"w":4.3,"h":5.7}},{"img":0,"x":79.3,"y":38.3,"t":"「選んだものを削除」（1件だけなら右の「×」）","box":{"x":65.2,"y":33.4,"w":28.2,"h":9.8}}]}</script>
+  </div>
+<!-- /demo:saved -->
+  <ul>
+    <li>「選択内容をコピー」を押すと、右の「<b>保存した選択</b>」に自動で残ります（<b>このパソコンのこのブラウザだけ</b>・18件まで。古いものから消えます）。</li>
+    <li>メモ欄にクライアント名を入れておくと、あとで探しやすくなります。</li>
+    <li>「<b>開く</b>」でその選び方に戻ります。</li>
+    <li>「<b>申込書DL</b>」で配布会社向けの申込書PDF（A3・2枚：1枚目＝エリア別配布部数と注文書、2枚目＝選んだ区画の地図）を作ります。スタッフ用で、社内で共有しているパスワードが必要です。</li>
+    <li>いらなくなった保存は、左のチェックで選んで「選んだ○件を削除」か、「×」で消せます。</li>
+  </ul>
+</section>
+
+<section id="mobile">
+  <h2><span class="no">11</span>スマホで使う</h2>
+<!-- demo:mobile -->
+  <h3>動きで見る：スマホで使う</h3>
+  <div class="demo" data-demo="mobile">
+    <div class="stage" style="width:300px"><img src="img/demo-mobile-1.jpg" alt="スマホの画面" width="390" height="844" loading="lazy"></div>
+    <div class="side"><h4>見る場所</h4><ol class="steps"></ol><div class="ctl"><button type="button" data-act="pause">一時停止</button><button type="button" data-act="again">最初から</button></div></div>
+    <script type="application/json">{"images":[{"src":"img/demo-mobile-1.jpg","w":390,"h":844,"dw":300,"alt":"スマホの画面"},{"src":"img/demo-mobile-2.jpg","w":390,"h":844,"dw":300,"alt":"スマホの地図"},{"src":"img/demo-mobile-3.jpg","w":390,"h":844,"dw":300,"alt":"スマホの料金"}],"steps":[{"img":0,"x":50,"y":13.6,"t":"エリアのボタンは上に並びます","box":{"x":4.1,"y":6.2,"w":91.8,"h":14.9},"look":{"x":3.6,"y":5.9,"w":92.8,"h":15.4}},{"img":0,"x":82.6,"y":23.5,"t":"右上の「使い方ガイド」でこのガイド","box":{"x":69.2,"y":21.8,"w":26.7,"h":3.4},"look":{"x":68.7,"y":21.6,"w":27.7,"h":3.9}},{"img":1,"x":41.2,"y":33.7,"t":"地図の区画をタップして選びます（2本の指で拡大）","box":{"x":40.9,"y":33.6,"w":0.5,"h":0.2},"more":[{"x":39.5,"y":31.4}]},{"img":1,"x":50,"y":97.1,"t":"下の黒い帯に、いつでも合計部数と料金が出ます","box":{"x":0,"y":94.2,"w":100,"h":5.8},"look":{"x":0,"y":94.2,"w":100,"h":5.8}},{"img":2,"x":50,"y":41.2,"t":"地図の下に、料金の計算・コピー・保存した選択が続きます","box":{"x":9,"y":14.5,"w":82.1,"h":53.3},"look":{"x":9,"y":14.5,"w":82.1,"h":53.3}}]}</script>
+  </div>
+<!-- /demo:mobile -->
+  <ul>
+    <li>スマホでは、上から「エリアのボタン → 地図 → 合計・料金 → 保存した選択 → 区画一覧」の順に縦に並びます。</li>
+    <li>画面の下に、いつでも合計部数と料金が出ます。</li>
+    <li>地図は2本の指で拡大・縮小できます。区画はタップで選びます。</li>
+  </ul>
+</section>
+
+<section id="faq">
+  <h2><span class="no">12</span>よくある質問</h2>
+  <dl class="faq">
+    <dt>選んだ区画を全部外したい</dt>
+    <dd>右の合計部数の横の「<b>リセット</b>」を押してください。今のエリアの選択・部数調整・ピンが消え、チラシサイズはA4、折加工・挟み込みは「不要」に戻ります。</dd>
+    <dt>地図が白くて表示されない</dt>
+    <dd>通信の具合で地図の画像が遅れることがあります。少し待つか、再読み込みしてください。計算はそのまま使えます。</dd>
+    <dt>住所が見つからない</dt>
+    <dd>番地を省いて「○○市○○町」まで入れてみてください。それでもだめなら、地図を動かして「円で選ぶ」を使ってください。</dd>
+    <dt>一覧に「地図なし」と出ている区画がある</dt>
+    <dd>配布マップに場所がない区画です。一覧のチェックで選べます。</dd>
+    <dt>前に保存した選択が見当たらない</dt>
+    <dd>保存は使ったパソコン・ブラウザの中だけに残ります。別のパソコンやスマホでは出ません。URLで共有すると、どこでも開けます。</dd>
+    <dt>区画の境目が実際と少しずれている</dt>
+    <dd>区画の形は配布マップと国勢調査の町丁目の境をもとに作っています。数十メートルずれることがあります。正確な範囲は配布会社の配布マップで確かめてください。</dd>
+  </dl>
+</section>
+
+</main>
+</div>
+<footer>配布エリア選択シート 使い方ガイド ・ 株式会社 ケイ・クリエイト 情報誌くれよん</footer>
+<!-- demo-js:start -->
+<script>
+// 動きで見る（ポインターのアニメーション）: guide/build-demos.js が index.html に入れる。ここを直したら build-demos.js を実行
+// データ（各 .demo の中の <script type="application/json">）:
+//   images: [{ src, w, h, dw }]  … 写真（w,h は画面上の大きさ・dw は表示する幅 px）
+//   steps:  [{ img, x, y, t, look:{x,y,w,h}, type:'文字', drag:{x,y}, more:[{x,y}] }]  … x,y,w,h は写真の左上=0%・右下=100%
+//   look = 押さずに「ここを見る」（枠で囲む）／ type = 入力する文字を見せる／ drag = つまんで引く／ more = 続けて押す場所
+// テスト用: window.__demoGo('id', n) でアニメーションなしに n 番目（0 から）を表示して止める
+(function () {
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var ARROW = '<svg viewBox="0 0 24 24" width="30" height="30"><path d="M4 2l15 11.2-6.6.9 3.9 7.6-2.9 1.4-3.8-7.6L4 20z" fill="#fff" stroke="#0f172a" stroke-width="1.6" stroke-linejoin="round"/></svg>';
+  var demos = {};
+  document.querySelectorAll('.demo[data-demo]').forEach(function (box) {
+    var data = JSON.parse(box.querySelector('script[type="application/json"]').textContent);
+    var steps = data.steps, images = data.images, stage = box.querySelector('.stage'), img = stage.querySelector('img'), list = box.querySelector('ol.steps');
+    var maxDw = Math.max.apply(null, images.map(function (m) { return m.dw; }));
+    if (maxDw > 520) box.classList.add('wide');
+    var preloaded = false;
+    function preload() { if (preloaded) return; preloaded = true; images.forEach(function (m) { var pre = new Image(); pre.src = m.src; }); } // 見えたときに、このデモの写真を先に読み込む（切り替えで待たない・ページを開いた時は読まない）
+    list.innerHTML = steps.map(function (s) { return '<li>' + s.t + '</li>'; }).join('');
+    var lis = list.querySelectorAll('li');
+    var now = document.createElement('div'); now.className = 'now'; now.textContent = '▶ ' + steps[0].t; stage.insertAdjacentElement('afterend', now);
+    var ptr = document.createElement('div'); ptr.className = 'ptr'; ptr.innerHTML = ARROW; stage.appendChild(ptr);
+    var ring = document.createElement('div'); ring.className = 'ring'; stage.appendChild(ring);
+    var hl = document.createElement('div'); hl.className = 'hl'; stage.appendChild(hl);
+    var typing = document.createElement('div'); typing.className = 'typing'; stage.appendChild(typing);
+    var badge = document.createElement('div'); badge.className = 'badge'; stage.appendChild(badge);
+    var i = -1, cur = -1, timer = null, visible = false, paused = false, pauseBtn = box.querySelector('[data-act=pause]');
+    var HOME = { x: 70, y: 4 };
+    function place(el, p) { el.style.left = p.x + '%'; el.style.top = p.y + '%'; }
+    function wait(ms, fn) { clearTimeout(timer); timer = setTimeout(fn, reduce ? Math.min(ms, 300) : ms); }
+    function setImg(k, instant, done) {
+      if (k === cur) return done && done();
+      var m = images[k]; cur = k;
+      function swap() { img.src = m.src; img.width = m.w; img.height = m.h; img.alt = m.alt || img.alt; stage.style.width = m.dw + 'px'; }
+      if (instant || img.getAttribute('src') === m.src) { swap(); return done && done(); }
+      img.classList.add('fade'); hl.classList.remove('on'); typing.classList.remove('on');
+      setTimeout(function () { swap(); img.classList.remove('fade'); done && setTimeout(done, 200); }, 180);
+    }
+    function mark(n) {
+      if (n >= 0) now.textContent = (n + 1) + '. ' + steps[n].t;
+      lis.forEach(function (li, k) { li.classList.toggle('on', k === n); li.classList.toggle('done', n >= 0 && k < n); });
+    }
+    function showHl(s) { if (s.look) { hl.style.left = s.look.x + '%'; hl.style.top = s.look.y + '%'; hl.style.width = s.look.w + '%'; hl.style.height = s.look.h + '%'; hl.classList.add('on'); } else hl.classList.remove('on'); }
+    function placeTyping(s) { // 入力欄のすぐ下（下の端に近いときは上）
+      var b = s.box || { x: s.x - 10, y: s.y - 2, w: 20, h: 4 };
+      typing.style.left = Math.max(0, Math.min(b.x, 60)) + '%';
+      if (b.y + b.h > 82) { typing.style.top = 'auto'; typing.style.bottom = (100 - b.y + 1) + '%'; }
+      else { typing.style.bottom = 'auto'; typing.style.top = (b.y + b.h + 1) + '%'; }
+    }
+    function click(p, done) { place(ring, p); ring.classList.remove('go'); void ring.offsetWidth; ring.classList.add('go'); ptr.classList.add('press'); setTimeout(function () { ptr.classList.remove('press'); }, 160); wait(500, done); }
+    function typeText(s, done) {
+      placeTyping(s); typing.textContent = ''; typing.classList.add('on');
+      var txt = s.type, k = 0;
+      (function one() { k++; typing.textContent = txt.slice(0, k); if (k < txt.length) wait(reduce ? 0 : 70, one); else wait(1300, function () { typing.classList.remove('on'); done(); }); })();
+    }
+    function show(n) {
+      mark(n);
+      var s = steps[n];
+      typing.classList.remove('on');
+      setImg(s.img || 0, false, function () {
+        var p = { x: s.x, y: s.y }; place(ptr, p); place(badge, p); badge.textContent = n + 1; badge.style.opacity = 1; ptr.style.opacity = 1;
+        showHl(s);
+        wait(1000, function () {
+          if (s.look) return next(1900);
+          if (s.drag) { ptr.classList.add('press', 'drag'); wait(250, function () { place(ptr, s.drag); place(badge, s.drag); wait(1300, function () { ptr.classList.remove('press', 'drag'); next(1300); }); }); return; }
+          var more = (s.more || []).slice();
+          (function chain() {
+            click(p, function () {
+              if (s.type && !more.length) return typeText(s, function () { next(500); });
+              if (!more.length) return next(1500);
+              p = more.shift(); place(ptr, p); place(badge, p); wait(650, chain);
+            });
+          })();
+        });
+      });
+    }
+    function reset() { i = -1; mark(-1); badge.style.opacity = 0; hl.classList.remove('on'); typing.classList.remove('on'); place(ptr, HOME); }
+    function next(ms) {
+      wait(ms, function () {
+        if (!visible || paused) { timer = null; return; }
+        i++;
+        if (i >= steps.length) { reset(); return wait(1800, function () { setImg(steps[0].img || 0, false, function () { next(0); }); }); }
+        show(i);
+      });
+    }
+    function start() { if (timer || paused) return; next(400); }
+    function stop() { clearTimeout(timer); timer = null; }
+    setImg(steps[0].img || 0, true); place(ptr, HOME); place(badge, HOME); badge.style.opacity = 0;
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { visible = es[0].isIntersecting; if (visible) { preload(); start(); } else stop(); }, { threshold: .3 }).observe(stage);
+    else { visible = true; preload(); start(); }
+    function setPaused(v) { paused = v; pauseBtn.textContent = paused ? '再生' : '一時停止'; }
+    pauseBtn.onclick = function () { setPaused(!paused); stop(); if (!paused) next(200); };
+    box.querySelector('[data-act=again]').onclick = function () { stop(); setPaused(false); reset(); setImg(steps[0].img || 0, false, function () { next(100); }); };
+    // 手順の一覧を押すと、その手順から
+    lis.forEach(function (li, k) { li.onclick = function () { stop(); setPaused(false); i = k - 1; next(0); }; });
+    // テスト用: n 番目をアニメーションなしで表示して止める
+    demos[box.dataset.demo] = function (n) {
+      stop(); setPaused(true); preload(); box.classList.add('instant');
+      var s = steps[n]; i = n; mark(n); setImg(s.img || 0, true);
+      var p = { x: s.x, y: s.y }; place(ptr, p); place(badge, p); badge.textContent = n + 1; badge.style.opacity = 1; ptr.style.opacity = 1;
+      showHl(s);
+      if (s.type) { placeTyping(s); typing.textContent = s.type; typing.classList.add('on'); } else typing.classList.remove('on');
+      void box.offsetWidth; box.classList.remove('instant');
+      return { img: images[s.img || 0].src, x: s.x, y: s.y };
+    };
+  });
+  window.__demoGo = function (id, n) { return demos[id] ? demos[id](n) : null; };
+  window.__demoIds = Object.keys(demos);
+})();
+</script>
+<!-- demo-js:end -->
+</body>
+</html>
