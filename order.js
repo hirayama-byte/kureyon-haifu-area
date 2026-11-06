@@ -97,8 +97,14 @@
     const x = current;
     const today = new Date();
     const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    $('oCompany').innerHTML = staff.companies.map(c => `<option>${esc(c)}</option>`).join('');
-    $('oCompany').value = localGet('haifu-company') || staff.companies[0];
+    // 配布会社はエリアで決まる（2026-11-06 オーナー指示）: 一宮・稲沢・江南・大口・扶桑・岩倉 → ワークアシスト、それ以外の4エリア → ケイピーエス。選べるのはその1社だけ
+    const want = ['ichinomiya', 'inazawa', 'konan'].includes(x.areaId) ? /ワークアシスト/ : /ケイピーエス|ケーピーエス|KPS/i;
+    const allowed = staff.companies.filter(c => want.test(c));
+    const list = allowed.length ? allowed : staff.companies; // 名前が見つからないときだけ従来どおり全部
+    $('oCompany').innerHTML = list.map(c => `<option>${esc(c)}</option>`).join('');
+    $('oCompany').value = list.includes(localGet('haifu-company')) ? localGet('haifu-company') : list[0];
+    $('oCompany').disabled = list.length === 1;
+    $('oCompany').title = list.length === 1 ? 'このエリアの配布会社は決まっています' : '';
     $('oEdition').innerHTML = staff.editions.map(c => `<option>${esc(c)}</option>`).join('');
     $('oEdition').value = { seihoku: '西北版', inazawa: '一宮版', ichinomiya: '一宮版', konan: '江南版', kiyosu: '清須版', kitanagoya: '岩倉版', tsushima: '津島版' }[x.areaId] || staff.editions[0];
     $('oDate').value = iso(today);
